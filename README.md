@@ -1,5 +1,9 @@
 # QR Studio Pro | Ultimate Visual Builder
 
+[![Live Demo](https://img.shields.io/badge/DEMO-ONLINE-green?style=for-the-badge&logo=github)](https://coelhobugado.github.io/qr-studio-pro/)
+
+> **Acesse Online:** [https://coelhobugado.github.io/qr-studio-pro/](https://coelhobugado.github.io/qr-studio-pro/)
+
 Bem-vindo ao **QR Studio Pro**, uma ferramenta poderosa e visualmente deslumbrante para criar QR Codes personalizados diretamente no seu navegador. Este projeto foi desenvolvido com foco em estética, usabilidade e personalização.
 
 ![QR Studio Pro Preview](https://via.placeholder.com/800x400?text=Preview+do+QR+Studio+Pro)
