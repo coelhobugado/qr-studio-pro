@@ -4,7 +4,6 @@ Bem-vindo ao **QR Studio Pro**, uma ferramenta poderosa e visualmente deslumbran
 
 <img width="1346" height="599" alt="image" src="https://github.com/user-attachments/assets/c7a6572e-ac49-4dbb-8790-512ad402db64" />
 
-)
 
 ## ✨ Funcionalidades
 
