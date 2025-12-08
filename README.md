@@ -2,8 +2,9 @@
 
 Bem-vindo ao **QR Studio Pro**, uma ferramenta poderosa e visualmente deslumbrante para criar QR Codes personalizados diretamente no seu navegador. Este projeto foi desenvolvido com foco em estética, usabilidade e personalização.
 
-![QR Studio Pro Preview](https://via.placeholder.com/800x400?text=Preview+do+QR+Studio+Pro)
-*(Substitua este link por uma captura de tela real do seu projeto)*
+<img width="1346" height="599" alt="image" src="https://github.com/user-attachments/assets/c7a6572e-ac49-4dbb-8790-512ad402db64" />
+
+)
 
 ## ✨ Funcionalidades
 
