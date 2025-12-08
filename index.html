@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Studio Pro | Ultimate Visual Builder</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            900: '#134e4a',
+                        }
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.05)',
+                        'glow': '0 0 20px rgba(20, 184, 166, 0.2)',
+                    },
+                    animation: {
+                        'slide-up': 'slideUp 0.3s ease-out forwards',
+                        'fade-in': 'fadeIn 0.2s ease-out forwards',
+                    },
+                    keyframes: {
+                        slideUp: {
+                            '0%': { transform: 'translateY(100%)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+        }
+
+        .dark {
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(15, 23, 42, 0.6);
+        }
+
+        /* Dark Mode Background */
+        .dark body {
+            background-color: #0f172a;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 10%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(220, 50%, 10%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(339, 49%, 10%, 1) 0, transparent 50%);
+        }
+
+        body {
+            background-color: #f0f4f8;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 90%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(180, 100%, 95%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(339, 49%, 90%, 1) 0, transparent 50%);
+            background-attachment: fixed;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Glassmorphism Classes */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Segmented Control - Pills */
+        .segmented-control {
+            background: #e2e8f0;
+            padding: 0.3rem;
+            border-radius: 1rem;
+            display: flex;
+            position: relative;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #64748b;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: #334155;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #0f172a;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Color Cards & Inputs */
+        .color-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        /* Better hover state for interactivity */
+        .color-card:hover {
+            border-color: #14b8a6; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px -2px rgba(20, 184, 166, 0.1);
+        }
+
+        .color-circle {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-circle input[type="color"] {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            cursor: pointer;
+            border: none;
+            padding: 0;
+            margin: 0;
+            opacity: 0;
+        }
+
+        /* Shape Buttons */
+        .shape-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .shape-btn:hover {
+            border-color: #14b8a6;
+            background: #f0fdfa;
+            transform: translateY(-2px);
+        }
+
+        .shape-btn.active {
+            background: #f0fdfa;
+            border-color: #0d9488;
+            color: #0d9488;
+            box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+        }
+
+        /* Range Slider UX */
+        input[type=range] {
+            -webkit-appearance: none; 
+            background: transparent; 
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+        }
+
+        input[type=range]:focus {
+            outline: none; 
+        }
+
+        /* Realistic Phone */
+        .phone-frame {
+            border: 14px solid #1e293b;
+            border-radius: 50px;
+            overflow: hidden;
+            position: relative;
+            background: #000;
+            box-shadow:
+                0 0 0 2px #334155,
+                0 20px 40px -10px rgba(0, 0, 0, 0.5);
+            width: 260px;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 24px;
+            background: #000;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            z-index: 50;
+        }
+
+        /* Carousel */
+        .carousel-container {
+            display: flex;
+            gap: 0.75rem;
+            overflow-x: auto;
+            padding: 0.5rem;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .carousel-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .carousel-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Improved Navigation Buttons (UX) */
+        .carousel-btn {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(226, 232, 240, 1);
+            border-radius: 50%;
+            width: 2rem; /* Bigger touch target */
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            z-index: 10;
+            color: #475569;
+            opacity: 0; 
+            pointer-events: none;
+        }
+
+        .carousel-wrapper:hover .carousel-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .carousel-btn:hover {
+            background: white;
+            border-color: #14b8a6;
+            color: #0d9488;
+            transform: scale(1.1);
+        }
+
+        .carousel-btn.left { left: -1rem; }
+        .carousel-btn.right { right: -1rem; }
+
+        .carousel-container { scroll-snap-type: x mandatory; }
+        .carousel-item { scroll-snap-align: start; flex: 0 0 auto; width: 3.5rem; }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            opacity: 0;
+        }
+
+        .accordion-content.open {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 1rem;
+        }
+
+        .accordion-trigger i { transition: transform 0.3s; }
+        .accordion-trigger.open i { transform: rotate(180deg); }
+
+        .phone-reflection {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.05) 100%);
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+    </style>
+</head>
+
+<body class="text-slate-600 min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900">
+
+    <!-- Toast -->
+    <div id="toast" class="flex items-center justify-center gap-2">
+        <i data-lucide="check-circle" class="w-5 h-5 text-teal-400"></i>
+        <span id="toast-message">Operação realizada!</span>
+    </div>
+
+    <!-- Nav -->
+    <nav class="glass sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div
+                    class="bg-gradient-to-br from-teal-500 to-emerald-600 p-2.5 rounded-xl text-white shadow-lg shadow-teal-500/20 transform transition hover:scale-105">
+                    <i data-lucide="qr-code" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xl text-slate-800 tracking-tight">QR Studio <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-500">Pro</span>
+                    </h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="themeToggle" onclick="toggleTheme()"
+                    class="p-2 rounded-full text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition">
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 lg:px-6 py-6 lg:py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 w-full relative">
+
+        <!-- Controls Panel (Order 2 on Mobile, Order 1 on Desktop) -->
+        <div class="lg:col-span-7 flex flex-col gap-6 order-2 lg:order-1">
+            <div
+                class="glass-panel rounded-[2rem] p-1 flex flex-col h-full overflow-hidden relative dark:bg-slate-900/60 dark:border-slate-700">
+
+                <!-- Tabs -->
+                <div class="p-4 lg:p-6 border-b border-slate-100/50 dark:border-slate-700/50">
+                    <div class="segmented-control overflow-x-auto no-scrollbar">
+                        <button onclick="switchTab('content')" id="tab-content"
+                            class="tab-btn active flex items-center justify-center gap-2 min-w-[100px]"><i data-lucide="link"
+                                class="w-4 h-4"></i> Conteúdo</button>
+                        <button onclick="switchTab('colors')" id="tab-colors"
+                            class="tab-btn flex items-center justify-center gap-2"><i data-lucide="palette"
+                                class="w-4 h-4"></i> Cores</button>
+                        <button onclick="switchTab('design')" id="tab-design"
+                            class="tab-btn flex items-center justify-center gap-2"><i data-lucide="shapes"
+                                class="w-4 h-4"></i> Design</button>
+                        <button onclick="switchTab('logo')" id="tab-logo"
+                            class="tab-btn flex items-center justify-center gap-2"><i data-lucide="image"
+                                class="w-4 h-4"></i> Logo</button>
+                    </div>
+                </div>
+
+                <!-- Panels -->
+                <div class="p-8 flex-grow overflow-y-auto">
+
+                    <!-- Content Panel -->
+                    <div id="content-panel" class="tab-content active space-y-6">
+                        <div
+                            class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                            <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-3">URL de
+                                Destino</label>
+                            <div class="relative group">
+                                <i data-lucide="globe"
+                                    class="absolute left-4 top-4 w-5 h-5 text-slate-400 group-focus-within:text-teal-500 transition"></i>
+                                <input type="text" id="dataInput"
+                                    class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-medium text-slate-700 dark:text-slate-300 placeholder:text-slate-400"
+                                    placeholder="https://..." value="https://harpya.films">
+                            </div>
+                            <p class="text-xs text-slate-400 mt-3 font-medium flex items-center gap-1"><i
+                                    data-lucide="zap" class="w-3 h-3 text-yellow-500"></i> Atualização em tempo real</p>
+                        </div>
+                    </div>
+
+                    <!-- Colors Panel -->
+                    <div id="colors-panel" class="tab-content space-y-6">
+                        <div>
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 block">Paletas
+                                Rápidas</label>
+                            <div class="carousel-wrapper">
+                                <button class="carousel-btn left" onclick="scrollCarousel('colorPresetsGrid', -1)"><i
+                                        data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                                <div class="carousel-container" id="colorPresetsGrid">
+                                    <!-- Injected JS -->
+                                </div>
+                                <button class="carousel-btn right" onclick="scrollCarousel('colorPresetsGrid', 1)"><i
+                                        data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                            <button type="button"
+                                class="accordion-trigger w-full flex items-center justify-between text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-teal-600 transition">
+                                <span><i data-lucide="sliders" class="w-4 h-4 inline mr-2 text-teal-500"></i> Cores
+                                    Avançadas</span>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+                            </button>
+
+                            <div class="accordion-content">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <!-- Background Color -->
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between items-center">
+                                            <label
+                                                class="text-xs font-bold text-slate-600 dark:text-slate-400">Fundo</label>
+                                            <div class="flex items-center gap-1">
+                                                <input type="checkbox" id="bgTransparentToggle"
+                                                    class="accent-teal-600 w-3 h-3 cursor-pointer">
+                                                <span class="text-[9px] uppercase font-bold text-slate-400">Transparente</span>
+                                            </div>
+                                        </div>
+                                        <div class="color-card p-2 gap-2 h-10 dark:bg-slate-900 dark:border-slate-600"
+                                            id="bgColorWrapper">
+                                            <div class="color-circle w-6 h-6"><input type="color" id="bgColor"
+                                                    value="#ffffff"></div>
+                                            <span id="bgColorDisplay"
+                                                class="font-mono text-xs font-semibold dark:text-slate-300">#FFFFFF</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Dots Color (renamed to Main Color / Gradient) -->
+                                    <div class="space-y-2 col-span-2">
+                                        <div class="flex justify-between items-center">
+                                            <label
+                                                class="text-xs font-bold text-slate-600 dark:text-slate-400">Preenchimento
+                                                Principal</label>
+                                            <div class="flex bg-slate-100 dark:bg-slate-900 rounded-lg p-0.5">
+                                                <button onclick="setGradientMode('none')" id="btnSolid"
+                                                    class="px-2 py-0.5 text-[9px] font-bold rounded-md bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm transition">Sólido</button>
+                                                <button onclick="setGradientMode('linear')" id="btnGradient"
+                                                    class="px-2 py-0.5 text-[9px] font-bold rounded-md text-slate-400 hover:text-slate-600 transition">Gradiente</button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Solid Input -->
+                                        <div id="solidColorInput"
+                                            class="color-card p-2 gap-2 h-10 dark:bg-slate-900 dark:border-slate-600">
+                                            <div class="color-circle w-6 h-6"><input type="color" id="dotsColor"
+                                                    value="#000000"></div>
+                                            <span id="dotsColorDisplay"
+                                                class="font-mono text-xs font-semibold dark:text-slate-300">#000000</span>
+                                        </div>
+
+                                        <!-- Gradient Inputs -->
+                                        <div id="gradientInputs" class="hidden grid grid-cols-2 gap-2">
+                                            <div
+                                                class="color-card p-2 gap-2 h-10 dark:bg-slate-900 dark:border-slate-600">
+                                                <div class="color-circle w-6 h-6"><input type="color" id="gradColor1"
+                                                        value="#000000"></div>
+                                                <span class="text-[10px] font-bold text-slate-400">Início</span>
+                                            </div>
+                                            <div
+                                                class="color-card p-2 gap-2 h-10 dark:bg-slate-900 dark:border-slate-600">
+                                                <div class="color-circle w-6 h-6"><input type="color" id="gradColor2"
+                                                        value="#000000"></div>
+                                                <span class="text-[10px] font-bold text-slate-400">Fim</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Frame Color -->
+                                    <div class="space-y-1">
+                                        <label
+                                            class="text-xs font-bold text-slate-600 dark:text-slate-400">Moldura dos Cantos</label>
+                                        <div class="color-card p-2 gap-2 h-10 dark:bg-slate-900 dark:border-slate-600">
+                                            <div class="color-circle w-6 h-6"><input type="color" id="frameColor"
+                                                    value="#000000"></div>
+                                            <span id="frameColorDisplay"
+                                                class="font-mono text-xs font-semibold dark:text-slate-300">#000000</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Center Color -->
+                                    <div class="space-y-1">
+                                        <label
+                                            class="text-xs font-bold text-slate-600 dark:text-slate-400">Miolo dos Cantos</label>
+                                        <div class="color-card p-2 gap-2 h-10 dark:bg-slate-900 dark:border-slate-600">
+                                            <div class="color-circle w-6 h-6"><input type="color" id="eyeDotColor"
+                                                    value="#000000"></div>
+                                            <span id="eyeDotColorDisplay"
+                                                class="font-mono text-xs font-semibold dark:text-slate-300">#000000</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Design Panel -->
+                    <div id="design-panel" class="tab-content space-y-8">
+                        <div>
+                            <label
+                                class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2"><i
+                                    data-lucide="sparkles" class="w-4 h-4 text-teal-500"></i> Temas Rápidos</label>
+                            <div class="carousel-wrapper">
+                                <button class="carousel-btn left" onclick="scrollCarousel('themesGrid', -1)"><i
+                                        data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                                <div class="carousel-container" id="themesGrid">
+                                    <!-- Themes injected by JS -->
+                                </div>
+                                <button class="carousel-btn right" onclick="scrollCarousel('themesGrid', 1)"><i
+                                        data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label
+                                class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2"><i
+                                    data-lucide="grid-3x3" class="w-4 h-4 text-teal-500"></i> Estilo dos Pontos</label>
+                            <div class="carousel-wrapper">
+                                <button class="carousel-btn left" onclick="scrollCarousel('bodyShapeGrid', -1)"><i
+                                        data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                                <div class="carousel-container" id="bodyShapeGrid"></div>
+                                <button class="carousel-btn right" onclick="scrollCarousel('bodyShapeGrid', 1)"><i
+                                        data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label
+                                class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2"><i
+                                    data-lucide="maximize" class="w-4 h-4 text-teal-500"></i> Moldura dos Cantos</label>
+                            <div class="carousel-container" id="eyeFrameGrid"></div>
+                        </div>
+
+                        <div>
+                            <label
+                                class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2"><i
+                                    data-lucide="circle-dot" class="w-4 h-4 text-teal-500"></i> Miolo dos Cantos</label>
+                            <div class="carousel-container" id="eyeDotGrid"></div>
+                        </div>
+                    </div>
+
+                    <!-- Logo Panel -->
+                    <div id="logo-panel" class="tab-content space-y-6">
+                        <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl p-10 text-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer relative group"
+                            id="dropzone">
+                            <input type="file" id="logoInput"
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*">
+                            <div class="space-y-4 group-hover:scale-105 transition duration-300">
+                                <div
+                                    class="w-16 h-16 bg-teal-50 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto text-teal-600 dark:text-teal-400 shadow-sm">
+                                    <i data-lucide="upload-cloud" class="w-8 h-8"></i>
+                                </div>
+                                <div>
+                                    <p class="text-base font-bold text-slate-700 dark:text-slate-200">Clique para enviar
+                                        logo</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Logo Controls -->
+                        <div id="logoControls" class="hidden space-y-6">
+                            <div
+                                class="bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800/50 rounded-xl p-4 flex items-center gap-4">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-800 flex items-center justify-center text-teal-600 dark:text-teal-400">
+                                    <i data-lucide="check" class="w-5 h-5"></i>
+                                </div>
+                                <div class="flex-grow">
+                                    <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200">Logo Carregada</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">A logo foi aplicada ao QR Code
+                                    </p>
+                                </div>
+                                <button id="removeLogoBtn"
+                                    class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition"
+                                    title="Remover Logo">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <!-- Size Control Slider -->
+                            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-100 dark:border-slate-700">
+                                <div class="flex justify-between items-center mb-4">
+                                    <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Tamanho da Logo</label>
+                                    <span class="text-xs font-mono bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded text-slate-600 dark:text-slate-300" id="logoSizeValue">25%</span>
+                                </div>
+                                <input type="range" id="logoSizeInput" min="0.1" max="0.5" step="0.01" value="0.25"
+                                    class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-teal-500">
+                                <div class="flex justify-between mt-2 text-[10px] text-slate-400 font-medium">
+                                    <span>Pequeno</span>
+                                    <span>Grande</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Panel (Order 1 on Mobile, Order 2 on Desktop) -->
+        <div class="lg:col-span-5 relative order-1 lg:order-2">
+            <div class="sticky top-4 lg:top-28 flex flex-col items-center gap-6 lg:gap-8">
+
+                <div class="perspective-1000">
+                    <div
+                        class="phone-frame transform duration-500 hover:rotate-y-6 hover:scale-[1.02] transition-transform mx-auto">
+                        <div class="phone-notch"></div>
+                        <div class="phone-reflection"></div>
+
+                        <!-- Screen -->
+                        <div class="h-[550px] bg-slate-50 flex flex-col relative w-[260px] mx-auto">
+                            <!-- Status Bar Area -->
+                            <div class="h-10 w-full bg-white/50 backdrop-blur z-20"></div>
+
+                            <!-- App Content -->
+                            <div class="flex-grow flex flex-col items-center justify-center p-6 relative">
+                                <div class="absolute inset-0 opacity-[0.03]"
+                                    style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 24px 24px;">
+                                </div>
+
+                                <div
+                                    class="bg-white p-4 rounded-3xl shadow-2xl shadow-slate-400/20 relative z-10 ring-1 ring-black/5">
+                                    <div id="qr-code-container"></div>
+                                </div>
+
+                                <div class="mt-6 text-center space-y-1">
+                                    <h3 class="text-lg font-bold text-slate-900">Scan Me</h3>
+                                    <p class="text-xs text-slate-500 font-medium">Harpya Films Studio</p>
+                                </div>
+                            </div>
+
+                            <!-- Nav Bar -->
+                            <div
+                                class="h-16 bg-white border-t border-slate-100 flex items-center justify-around px-8 pb-3">
+                                <i data-lucide="home" class="w-5 h-5 text-slate-300"></i>
+                                <div
+                                    class="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-teal-500/40 transform -translate-y-3">
+                                    <i data-lucide="qr-code" class="w-5 h-5"></i>
+                                </div>
+                                <i data-lucide="user" class="w-5 h-5 text-slate-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Download Card -->
+                <div
+                    class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl shadow-glass border border-white/60 dark:border-slate-700/60 p-6 w-full max-w-[320px]">
+                    <div class="mb-4">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Nome
+                            do
+                            Arquivo</label>
+                        <input type="text" id="fileName" value="harpya-qr"
+                            class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 outline-none focus:border-teal-500 transition">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="downloadQR('png')"
+                            class="flex flex-col items-center justify-center gap-1 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white py-3 px-4 rounded-xl transition shadow-lg shadow-slate-900/20 transform active:scale-95">
+                            <i data-lucide="download" class="w-5 h-5 mb-1"></i>
+                            <span class="text-xs font-bold">Salvar PNG</span>
+                        </button>
+                        
+                        <!-- UX Fix: Replaced broken SVG with useful Copy function -->
+                        <button onclick="copyToClipboard()"
+                            class="flex flex-col items-center justify-center gap-1 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 hover:border-teal-100 hover:bg-teal-50 text-slate-600 dark:text-slate-300 font-semibold py-3 px-4 rounded-xl transition transform active:scale-95">
+                            <i data-lucide="copy" class="w-5 h-5 mb-1"></i>
+                            <span class="text-xs font-bold">Copiar</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- Polyfill for roundRect ---
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, radii) {
+                if (!radii) radii = 0;
+                if (typeof radii === 'number') radii = [radii];
+                let r1, r2, r3, r4;
+                if (radii.length === 1) { r1 = r2 = r3 = r4 = radii[0]; }
+                else if (radii.length === 2) { r1 = r3 = radii[0]; r2 = r4 = radii[1]; }
+                else if (radii.length === 4) { [r1, r2, r3, r4] = radii; }
+                else { r1 = r2 = r3 = r4 = 0; }
+                this.beginPath();
+                this.moveTo(x + r1, y);
+                this.lineTo(x + w - r2, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + r2);
+                this.lineTo(x + w, y + h - r3);
+                this.quadraticCurveTo(x + w, y + h, x + w - r3, y + h);
+                this.lineTo(x + r4, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - r4);
+                this.lineTo(x, y + r1);
+                this.quadraticCurveTo(x, y, x + r1, y);
+                this.closePath();
+            };
+        }
+
+        function safeInitIcons() {
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id + '-panel').classList.add('active');
+            document.getElementById('tab-' + id).classList.add('active');
+            safeInitIcons();
+        }
+
+        // Configuration State
+        let config = {
+            width: 1000,
+            height: 1000,
+            text: "https://harpya.films",
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            colorFrame: "#000000",
+            colorEyeDot: "#000000",
+            bodyShape: "square",
+            frameShape: "square",
+            eyeDotShape: "square",
+            logo: null,
+            logoSize: 0.25,
+            isTransparent: false,
+            gradientType: "none", 
+            gradientColor1: "#000000",
+            gradientColor2: "#000000"
+        };
+
+        const shapes = {
+            body: [
+                { value: 'square', icon: '<rect x="4" y="4" width="16" height="16" />' },
+                { value: 'circle', icon: '<circle cx="12" cy="12" r="7" />' },
+                { value: 'rounded', icon: '<rect x="4" y="4" width="16" height="16" rx="4" />' },
+                { value: 'extra-rounded', icon: '<path d="M4,4 h16 v16 h-16 v-8 a8,8 0 0,1 8,-8 z" />' },
+                { value: 'classy', icon: '<path d="M4,4 h16 v16 h-16 v-8 a8,8 0 0,1 0,0 z" transform="rotate(45 12 12)" />' },
+                { value: 'classy-rounded', icon: '<path d="M4,4 h16 v16 h-16 v-8 a8,8 0 0,1 0,0 z" transform="rotate(45 12 12)" rx="2" />' },
+                { value: 'diamond', icon: '<rect x="4" y="4" width="16" height="16" transform="rotate(45 12 12)" />' },
+                { value: 'star', icon: '<polygon points="12,2 15,9 22,9 17,15 19,22 12,18 5,22 7,15 2,9 9,9" />' },
+                { value: 'heart', icon: '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>' },
+                { value: 'triangle', icon: '<polygon points="12,3 22,21 2,21" />' },
+                { value: 'hexagon', icon: '<path d="M12,2 L21,7 L21,17 L12,22 L3,17 L3,7 Z" />' },
+                { value: 'cross', icon: '<path d="M9,2 L15,2 L15,9 L22,9 L22,15 L15,15 L15,22 L9,22 L9,15 L2,15 L2,9 L9,9 Z" />' }
+            ],
+            eyeFrame: [
+                { value: 'square', icon: '<path d="M2,2 h20 v20 h-20 z M6,6 v12 h12 v-12 z" fill-rule="evenodd"/>' },
+                { value: 'rounded', icon: '<path d="M2,8 a6,6 0 0,1 6,-6 h8 a6,6 0 0,1 6,6 v8 a6,6 0 0,1 -6,6 h-8 a6,6 0 0,1 -6,-6 z M6,8 a2,2 0 0,1 2,-2 h8 a2,2 0 0,1 2,2 v8 a2,2 0 0,1 -2,2 h-8 a2,2 0 0,1 -2,-2 z" fill-rule="evenodd"/>' },
+                { value: 'circle', icon: '<path d="M12,2 A10,10 0 1,1 12,22 A10,10 0 0,1 12,2 M12,6 A6,6 0 1,1 12,18 A6,6 0 0,1 12,6" fill-rule="evenodd"/>' },
+                { value: 'leaf', icon: '<path d="M2,12 a10,10 0 0,1 10,-10 h10 v10 a10,10 0 0,1 -10,10 h-10 z M6,12 a6,6 0 0,1 6,-6 h6 v6 a6,6 0 0,1 -6,6 h-6 z" fill-rule="evenodd"/>' },
+                { value: 'heart', icon: '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z M12 6.5 c-1-2-4-2-4 1 s4 4 4 4 s4-3 4-4 s-3-3-4-1 z" fill-rule="evenodd"/>' }
+            ],
+            eyeDot: [
+                { value: 'square', icon: '<rect x="7" y="7" width="10" height="10" />' },
+                { value: 'circle', icon: '<circle cx="12" cy="12" r="5" />' },
+                { value: 'diamond', icon: '<rect x="7" y="7" width="10" height="10" transform="rotate(45 12 12)" />' },
+                { value: 'star', icon: '<polygon points="12,7 13.5,10 17,10 14.5,12.5 15.5,16 12,14 8.5,16 9.5,12.5 7,10 10.5,10" />' },
+                { value: 'heart', icon: '<path d="M12 17.35l-1.45-1.32C5.4 11.36 4 9.28 4 7.5 4 5.42 5.42 4 7.5 4c1.74 0 3.41.81 4.5 2.09C13.09 4.81 14.76 4 16.5 4 18.58 4 20 5.42 20 7.5c0 1.78-1.4 3.86-6.55 8.54L12 17.35z" transform="scale(0.8) translate(3 3)"/>' }
+            ]
+        };
+
+        function renderQR() {
+            if (typeof qrcode === 'undefined') {
+                console.error("QRCode library not loaded yet.");
+                return;
+            }
+
+            try {
+                const typeNumber = 0; 
+                const errorCorrectionLevel = 'Q';
+                const qr = qrcode(typeNumber, errorCorrectionLevel);
+                qr.addData(config.text);
+                qr.make();
+
+                const count = qr.getModuleCount();
+                const canvas = document.createElement('canvas');
+                const padding = 20; 
+                const size = config.width;
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = "high";
+
+                // Background
+                if (config.isTransparent) {
+                    ctx.clearRect(0, 0, size, size);
+                } else {
+                    ctx.fillStyle = config.colorLight;
+                    ctx.fillRect(0, 0, size, size);
+                }
+
+                const availableSize = size - (padding * 2);
+                const cellSize = availableSize / count;
+                const offset = padding;
+
+                const isCorner = (r, c) => {
+                    if (r < 7 && c < 7) return true;
+                    if (r < 7 && c >= count - 7) return true;
+                    if (r >= count - 7 && c < 7) return true;
+                    return false;
+                };
+
+                // Body
+                for (let r = 0; r < count; r++) {
+                    for (let c = 0; c < count; c++) {
+                        if (isCorner(r, c)) continue;
+                        if (qr.isDark(r, c)) {
+                            const cx = offset + c * cellSize;
+                            const cy = offset + r * cellSize;
+                            drawShape(ctx, config.bodyShape, cx, cy, cellSize, config.colorDark);
+                        }
+                    }
+                }
+
+                // Markers
+                const drawMarker = (r, c) => {
+                    const cx = offset + c * cellSize;
+                    const cy = offset + r * cellSize;
+                    drawEyeFrame(ctx, config.frameShape, cx, cy, cellSize * 7, config.colorFrame);
+                    drawEyeDot(ctx, config.eyeDotShape, cx + cellSize * 2, cy + cellSize * 2, cellSize * 3, config.colorEyeDot);
+                };
+
+                drawMarker(0, 0); 
+                drawMarker(0, count - 7); 
+                drawMarker(count - 7, 0); 
+
+                // Logo
+                if (config.logo) {
+                    const img = new Image();
+                    img.src = config.logo;
+                    img.onload = () => {
+                        const logoSize = size * config.logoSize;
+                        const lx = (size - logoSize) / 2;
+                        const ly = (size - logoSize) / 2;
+                        ctx.drawImage(img, lx, ly, logoSize, logoSize);
+                        updateContainer(canvas);
+                    };
+                    if (img.complete) {
+                        const logoSize = size * config.logoSize;
+                        const lx = (size - logoSize) / 2;
+                        const ly = (size - logoSize) / 2;
+                        ctx.drawImage(img, lx, ly, logoSize, logoSize);
+                        updateContainer(canvas);
+                        return;
+                    }
+                }
+
+                updateContainer(canvas);
+            } catch (e) {
+                console.error("Error rendering QR:", e);
+            }
+        }
+
+        function updateContainer(canvas) {
+            const container = document.getElementById("qr-code-container");
+            if (!container) return;
+            container.innerHTML = '';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            container.appendChild(canvas);
+        }
+
+        function getFillStyle(ctx, color, x, y, size) {
+            if (config.gradientType !== 'none') {
+                const gradient = ctx.createLinearGradient(0, 0, config.width, config.height);
+                gradient.addColorStop(0, config.gradientColor1);
+                gradient.addColorStop(1, config.gradientColor2);
+                return gradient;
+            }
+            return color;
+        }
+
+        function drawShape(ctx, type, x, y, size, color) {
+            if (color === config.colorDark && config.gradientType !== 'none') {
+                ctx.fillStyle = getFillStyle(ctx, color, 0, 0, 0);
+            } else {
+                ctx.fillStyle = color;
+            }
+
+            ctx.beginPath();
+            const r = size / 2;
+            const cx = x + r;
+            const cy = y + r;
+
+            if (type === 'square') {
+                ctx.fillRect(x, y, size + 0.5, size + 0.5);
+                return;
+            } else if (type === 'circle') {
+                ctx.arc(cx, cy, r * 0.9, 0, Math.PI * 2);
+            } else if (type === 'rounded') {
+                roundRect(ctx, x, y, size, size, size * 0.25);
+            } else if (type === 'extra-rounded') {
+                roundRect(ctx, x, y, size, size, size * 0.5);
+            } else if (type === 'classy') {
+                ctx.roundRect(x, y, size, size, [size / 2, 0, size / 2, 0]);
+            } else if (type === 'classy-rounded') {
+                ctx.roundRect(x, y, size, size, [size / 2, 0, size / 2, size / 4]);
+            } else if (type === 'star') {
+                drawStar(ctx, cx, cy, 5, r * 0.95, r * 0.4);
+            } else if (type === 'diamond') {
+                drawPolygon(ctx, cx, cy, 4, r * 0.9, 0);
+            } else if (type === 'triangle') {
+                drawPolygon(ctx, cx, cy, 3, r * 0.9, -Math.PI / 2);
+            } else if (type === 'hexagon') {
+                drawPolygon(ctx, cx, cy, 6, r * 0.9, Math.PI / 2);
+            } else if (type === 'cross') {
+                const w = size * 0.35;
+                ctx.rect(cx - w / 2, y, w, size);
+                ctx.rect(x, cy - w / 2, size, w);
+            } else if (type === 'heart') {
+                drawHeart(ctx, x, y, size, size);
+            } else {
+                ctx.fillRect(x, y, size, size);
+            }
+            ctx.fill();
+        }
+
+        function drawEyeFrame(ctx, type, x, y, size, color) {
+            ctx.strokeStyle = color;
+            const thickness = size / 7;
+            ctx.lineWidth = thickness;
+            const outerSize = size - thickness;
+            const outerX = x + thickness / 2;
+            const outerY = y + thickness / 2;
+            ctx.beginPath();
+            if (type === 'square') {
+                ctx.strokeRect(outerX, outerY, outerSize, outerSize);
+            } else if (type === 'circle') {
+                ctx.arc(x + size / 2, y + size / 2, outerSize / 2, 0, Math.PI * 2);
+                ctx.stroke();
+            } else if (type === 'rounded') {
+                roundRectPath(ctx, outerX, outerY, outerSize, outerSize, size * 0.2);
+                ctx.stroke();
+            } else if (type === 'leaf') {
+                const r = outerSize / 2;
+                const cx = outerX + r; const cy = outerY + r;
+                ctx.beginPath();
+                ctx.moveTo(outerX, cy);
+                ctx.arcTo(outerX, outerY, cx, outerY, r);
+                ctx.lineTo(cx, outerY);
+                ctx.lineTo(outerX + outerSize, outerY);
+                ctx.lineTo(outerX + outerSize, cy);
+                ctx.arcTo(outerX + outerSize, outerY + outerSize, cx, outerY + outerSize, r);
+                ctx.lineTo(cx, outerY + outerSize);
+                ctx.lineTo(outerX, outerY + outerSize);
+                ctx.closePath();
+                ctx.stroke();
+            } else if (type === 'heart') {
+                ctx.save();
+                ctx.translate(x, y);
+                const scale = size / 24;
+                ctx.scale(scale, scale);
+                ctx.lineWidth = thickness / scale;
+                const path = new Path2D("M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z");
+                ctx.stroke(path);
+                ctx.restore();
+            } else {
+                ctx.strokeRect(outerX, outerY, outerSize, outerSize);
+            }
+        }
+
+        function drawEyeDot(ctx, type, x, y, size, color) {
+            drawShape(ctx, type, x, y, size, color);
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, r);
+            ctx.fill();
+        }
+        function roundRectPath(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, r);
+        }
+
+        function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
+            let rot = Math.PI / 2 * 3;
+            let x = cx;
+            let y = cy;
+            let step = Math.PI / spikes;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - outerRadius);
+            for (let i = 0; i < spikes; i++) {
+                x = cx + Math.cos(rot) * outerRadius;
+                y = cy + Math.sin(rot) * outerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+                x = cx + Math.cos(rot) * innerRadius;
+                y = cy + Math.sin(rot) * innerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+            }
+            ctx.lineTo(cx, cy - outerRadius);
+            ctx.closePath();
+        }
+
+        function drawPolygon(ctx, cx, cy, sides, r, rotationOffset) {
+            ctx.beginPath();
+            for (let i = 0; i < sides; i++) {
+                const theta = (i / sides) * 2 * Math.PI + rotationOffset;
+                const x = cx + r * Math.cos(theta);
+                const y = cy + r * Math.sin(theta);
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+        }
+
+        function drawHeart(ctx, x, y, w, h) {
+            const topCurveHeight = h * 0.3;
+            ctx.beginPath();
+            ctx.moveTo(x + w / 2, y + h * 0.2);
+            ctx.bezierCurveTo(x + w / 2, y + h * 0.2 - topCurveHeight, x, y, x, y + h * 0.4);
+            ctx.bezierCurveTo(x, y + h * 0.6, x + w / 2, y + h * 0.8, x + w / 2, y + h);
+            ctx.bezierCurveTo(x + w / 2, y + h * 0.8, x + w, y + h * 0.6, x + w, y + h * 0.4);
+            ctx.bezierCurveTo(x + w, y, x + w / 2, y + h * 0.2 - topCurveHeight, x + w / 2, y + h * 0.2);
+            ctx.closePath();
+        }
+
+        // --- MAIN LOGIC ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                safeInitIcons();
+                renderThemes();
+                renderColorPresets();
+                renderShapeButtons('body', 'bodyShapeGrid', 'bodyShape');
+                renderShapeButtons('eyeFrame', 'eyeFrameGrid', 'frameShape');
+                renderShapeButtons('eyeDot', 'eyeDotGrid', 'eyeDotShape');
+                setupListeners();
+                setupAccordions();
+                setTimeout(() => renderQR(), 100);
+            } catch (err) {
+                console.error("Initialization error:", err);
+            }
+        });
+
+        function setupAccordions() {
+            const accordions = document.querySelectorAll('.accordion-trigger');
+            accordions.forEach(acc => {
+                acc.onclick = function() {
+                    this.classList.toggle('open');
+                    const content = this.nextElementSibling;
+                    if(content) content.classList.toggle('open');
+                };
+            });
+        }
+
+        const themes = [
+            { name: 'Clássico', colors: ['#000000', '#ffffff'], shapes: ['square', 'square', 'square'] },
+            { name: 'Romance', colors: ['#e11d48', '#ffe4e6'], shapes: ['heart', 'heart', 'heart'] },
+            { name: 'Tech', colors: ['#0284c7', '#e0f2fe'], shapes: ['hexagon', 'square', 'diamond'] },
+            { name: 'Solar', colors: ['#f59e0b', '#fffbeb'], shapes: ['circle', 'circle', 'circle'] },
+            { name: 'Neon', gradient: ['#6366f1', '#a855f7'], bg: '#0f172a', shapes: ['square', 'square', 'square'] },
+            { name: 'Ocean', gradient: ['#06b6d4', '#3b82f6'], bg: '#ecfeff', shapes: ['rounded', 'rounded', 'rounded'] },
+            { name: 'Forest', colors: ['#15803d', '#f0fdf4'], shapes: ['leaf', 'leaf', 'leaf'] }
+        ];
+
+        function renderThemes() {
+            const container = document.getElementById('themesGrid');
+            if(!container) return;
+            container.innerHTML = '';
+            themes.forEach(theme => {
+                const div = document.createElement('div');
+                div.className = 'carousel-item cursor-pointer group';
+                div.onclick = () => applyTheme(theme);
+
+                let bgStyle = theme.gradient ? `background: linear-gradient(135deg, ${theme.gradient[0]}, ${theme.gradient[1]})` : `background: ${theme.colors[0]}`;
+
+                div.innerHTML = `
+                    <div class="w-14 h-14 rounded-xl shadow-sm border border-slate-200 flex items-center justify-center text-white mb-2 transform transition group-hover:scale-105" style="${bgStyle}">
+                        <i data-lucide="sparkles" class="w-6 h-6"></i>
+                    </div>
+                    <p class="text-[10px] font-bold text-center text-slate-500 group-hover:text-teal-600">${theme.name}</p>
+                `;
+                container.appendChild(div);
+            });
+            safeInitIcons(); 
+        }
+
+        function applyTheme(theme) {
+            if (theme.gradient) {
+                config.gradientType = 'linear';
+                config.gradientColor1 = theme.gradient[0];
+                config.gradientColor2 = theme.gradient[1];
+                config.colorDark = theme.gradient[0]; 
+                config.colorLight = theme.bg;
+            } else {
+                config.gradientType = 'none';
+                config.colorDark = theme.colors[0];
+                config.colorLight = theme.colors[1];
+            }
+
+            // Fix: Sync frame and dot colors with the main body color to ensure visibility
+            config.colorFrame = config.colorDark;
+            config.colorEyeDot = config.colorDark;
+
+            if (theme.shapes) {
+                config.bodyShape = theme.shapes[0] || 'square';
+                config.frameShape = theme.shapes[1] || 'square';
+                config.eyeDotShape = theme.shapes[2] || 'square';
+                updateActiveButtons('bodyShapeGrid', config.bodyShape);
+                updateActiveButtons('eyeFrameGrid', config.frameShape);
+                updateActiveButtons('eyeDotGrid', config.eyeDotShape);
+            }
+
+            updateColorPickers();
+            renderQR();
+        }
+
+        const colorPresets = [
+            { type: 'solid', val: '#000000', bg: '#ffffff' },
+            { type: 'solid', val: '#0f172a', bg: '#e2e8f0' },
+            { type: 'solid', val: '#475569', bg: '#f8fafc' },
+            { type: 'solid', val: '#dc2626', bg: '#fef2f2' },
+            { type: 'solid', val: '#ea580c', bg: '#fff7ed' },
+            { type: 'solid', val: '#d97706', bg: '#fffbeb' },
+            { type: 'solid', val: '#16a34a', bg: '#f0fdf4' },
+            { type: 'solid', val: '#0d9488', bg: '#f0fdfa' },
+            { type: 'solid', val: '#0284c7', bg: '#f0f9ff' },
+            { type: 'solid', val: '#4f46e5', bg: '#eef2ff' },
+            { type: 'solid', val: '#7c3aed', bg: '#f5f3ff' },
+            { type: 'solid', val: '#db2777', bg: '#fdf2f8' },
+            { type: 'gradient', start: '#4f46e5', end: '#db2777', bg: '#ffffff' },
+            { type: 'gradient', start: '#06b6d4', end: '#3b82f6', bg: '#ffffff' },
+            { type: 'gradient', start: '#f59e0b', end: '#ef4444', bg: '#ffffff' },
+            { type: 'gradient', start: '#10b981', end: '#06b6d4', bg: '#ffffff' },
+            { type: 'gradient', start: '#8b5cf6', end: '#d946ef', bg: '#ffffff' },
+        ];
+
+        function renderColorPresets() {
+            const container = document.getElementById('colorPresetsGrid');
+            if(!container) return;
+            container.innerHTML = '';
+            colorPresets.forEach(preset => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'carousel-item';
+                const btn = document.createElement('button');
+                btn.className = "w-10 h-10 rounded-full border border-slate-200 ring-2 ring-transparent hover:ring-slate-300 transition shadow-sm";
+
+                if (preset.type === 'gradient') {
+                    btn.style.background = `linear-gradient(135deg, ${preset.start}, ${preset.end})`;
+                    btn.onclick = () => {
+                        config.gradientType = 'linear';
+                        config.gradientColor1 = preset.start;
+                        config.gradientColor2 = preset.end;
+                        config.colorLight = preset.bg;
+                        config.colorDark = preset.start;
+                        updateColorPickers();
+                        updateGradientUI();
+                        renderQR();
+                    };
+                } else {
+                    btn.style.backgroundColor = preset.val;
+                    btn.onclick = () => {
+                        config.gradientType = 'none';
+                        applyPreset(preset.val, preset.bg);
+                        updateGradientUI();
+                    };
+                }
+                wrapper.appendChild(btn);
+                container.appendChild(wrapper);
+            });
+        }
+
+        function setGradientMode(mode) {
+            config.gradientType = mode;
+            updateGradientUI();
+            renderQR();
+        }
+
+        function updateGradientUI() {
+            const btnSolid = document.getElementById('btnSolid');
+            const btnGradient = document.getElementById('btnGradient');
+            const solidInput = document.getElementById('solidColorInput');
+            const gradInput = document.getElementById('gradientInputs');
+
+            if (!btnSolid || !btnGradient) return;
+
+            if (config.gradientType === 'linear') {
+                btnGradient.className = "px-2 py-0.5 text-[9px] font-bold rounded-md bg-white text-slate-700 shadow-sm transition";
+                btnSolid.className = "px-2 py-0.5 text-[9px] font-bold rounded-md text-slate-400 hover:text-slate-600 transition";
+                solidInput.classList.add('hidden');
+                gradInput.classList.remove('hidden');
+            } else {
+                btnSolid.className = "px-2 py-0.5 text-[9px] font-bold rounded-md bg-white text-slate-700 shadow-sm transition";
+                btnGradient.className = "px-2 py-0.5 text-[9px] font-bold rounded-md text-slate-400 hover:text-slate-600 transition";
+                gradInput.classList.add('hidden');
+                solidInput.classList.remove('hidden');
+            }
+        }
+
+        function updateColorPickers() {
+            document.getElementById('dotsColor').value = config.colorDark;
+            document.getElementById('dotsColorDisplay').innerText = config.colorDark.toUpperCase();
+            document.getElementById('bgColor').value = config.colorLight;
+            document.getElementById('bgColorDisplay').innerText = config.colorLight.toUpperCase();
+
+            document.getElementById('frameColor').value = config.colorFrame;
+            document.getElementById('eyeDotColor').value = config.colorEyeDot;
+
+            const g1 = document.getElementById('gradColor1');
+            const g2 = document.getElementById('gradColor2');
+            if (g1) g1.value = config.gradientColor1;
+            if (g2) g2.value = config.gradientColor2;
+        }
+
+        function updateActiveButtons(containerId, value) {
+            renderShapeButtons('body', 'bodyShapeGrid', 'bodyShape');
+            renderShapeButtons('eyeFrame', 'eyeFrameGrid', 'frameShape');
+            renderShapeButtons('eyeDot', 'eyeDotGrid', 'eyeDotShape');
+        }
+
+        function renderShapeButtons(category, containerId, targetConfigKey) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            container.innerHTML = '';
+            shapes[category].forEach(shape => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'carousel-item';
+
+                const btn = document.createElement('button');
+                btn.className = `shape-btn w-full aspect-square rounded-xl border border-slate-200 flex items-center justify-center text-slate-400 hover:text-teal-500`;
+                btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">${shape.icon}</svg>`;
+                if (config[targetConfigKey] === shape.value) btn.classList.add('active');
+
+                btn.onclick = () => {
+                    config[targetConfigKey] = shape.value;
+                    container.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderQR();
+                };
+
+                wrapper.appendChild(btn);
+                container.appendChild(wrapper);
+            });
+        }
+
+        function setupListeners() {
+            document.getElementById('dataInput').addEventListener('input', (e) => {
+                config.text = e.target.value; renderQR();
+            });
+
+            const setupColor = (pickerId, displayId, configKey) => {
+                const picker = document.getElementById(pickerId);
+                const display = document.getElementById(displayId);
+                if(!picker || !display) return;
+                picker.addEventListener('input', (e) => {
+                    const val = e.target.value;
+                    display.innerText = val.toUpperCase();
+                    config[configKey] = val; // Update config
+                    renderQR();
+                });
+            };
+
+            setupColor('bgColor', 'bgColorDisplay', 'colorLight');
+            setupColor('dotsColor', 'dotsColorDisplay', 'colorDark');
+            setupColor('frameColor', 'frameColorDisplay', 'colorFrame');
+            setupColor('eyeDotColor', 'eyeDotColorDisplay', 'colorEyeDot');
+
+            document.getElementById('gradColor1').addEventListener('input', (e) => {
+                config.gradientColor1 = e.target.value; renderQR();
+            });
+            document.getElementById('gradColor2').addEventListener('input', (e) => {
+                config.gradientColor2 = e.target.value; renderQR();
+            });
+
+            document.getElementById('bgTransparentToggle').addEventListener('change', (e) => {
+                const w = document.getElementById('bgColorWrapper');
+                if (e.target.checked) {
+                    config.isTransparent = true;
+                    w.style.opacity = '0.5'; w.style.pointerEvents = 'none';
+                } else {
+                    config.isTransparent = false;
+                    w.style.opacity = '1'; w.style.pointerEvents = 'auto';
+                }
+                renderQR();
+            });
+
+            // Logo Upload & Size Control
+            document.getElementById('logoInput').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        config.logo = reader.result;
+                        document.getElementById('logoControls').classList.remove('hidden');
+                        document.getElementById('dropzone').classList.add('hidden');
+                        renderQR();
+                        showToast("Logo carregada com sucesso!");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            document.getElementById('logoSizeInput').addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                config.logoSize = val;
+                document.getElementById('logoSizeValue').innerText = Math.round(val * 100) + '%';
+                renderQR();
+            });
+
+            document.getElementById('removeLogoBtn').addEventListener('click', () => {
+                config.logo = null;
+                document.getElementById('logoInput').value = "";
+                document.getElementById('logoControls').classList.add('hidden');
+                document.getElementById('dropzone').classList.remove('hidden');
+                renderQR();
+            });
+        }
+
+        function applyPreset(primary, bg) {
+            document.getElementById('dotsColor').value = primary;
+            document.getElementById('frameColor').value = primary;
+            document.getElementById('eyeDotColor').value = primary;
+            document.getElementById('bgColor').value = bg;
+            ['dotsColor', 'frameColor', 'eyeDotColor', 'bgColor'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.dispatchEvent(new Event('input'));
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            const txt = document.getElementById("toast-message");
+            txt.innerText = msg;
+            toast.className = "show flex items-center justify-center gap-2";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        function downloadQR(ext) {
+            const canvas = document.querySelector('#qr-code-container canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = (document.getElementById('fileName').value || 'qr-code') + '.' + ext;
+            link.href = canvas.toDataURL('image/png'); // Always PNG for reliability
+            link.click();
+            showToast("Download iniciado!");
+        }
+
+        function copyToClipboard() {
+            const canvas = document.querySelector('#qr-code-container canvas');
+            if(!canvas) return;
+            canvas.toBlob(function(blob) { 
+                const item = new ClipboardItem({ "image/png": blob });
+                navigator.clipboard.write([item]).then(function() {
+                    showToast("Imagem copiada para a área de transferência!");
+                }, function(error) {
+                    showToast("Erro ao copiar imagem.");
+                    console.error(error);
+                });
+            });
+        }
+
+        function scrollCarousel(id, direction) {
+            const container = document.getElementById(id);
+            if (container) {
+                const scrollAmount = 200;
+                container.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
+            }
+        }
+
+        // --- DARK MODE LOGIC ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</body>
+
+</html>
