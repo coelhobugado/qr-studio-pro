@@ -4,654 +4,1479 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Studio Pro | Ultimate Visual Builder</title>
+    <title>QR Studio Pro | Criador Visual</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
 
+    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 
-    <script src="js/tailwind-config.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Inter"', 'sans-serif'],
+                        display: ['"Outfit"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff', 100: '#ede9fe', 500: '#8b5cf6', 600: '#7c3aed', 900: '#4c1d95',
+                        }
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.05)',
+                        'glow': '0 0 20px rgba(124, 58, 237, 0.2)',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(5px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-bg: rgba(255, 255, 255, 0.8);
+        }
+
+        .dark {
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(15, 23, 42, 0.7);
+        }
+
+        body {
+            background-color: #f8fafc;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 94%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 100%, hsla(240, 100%, 96%, 1) 0, transparent 50%);
+            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .dark body {
+            background-color: #020617;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 8%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 100%, hsla(240, 50%, 8%, 1) 0, transparent 50%);
+        }
+
+        /* Utils */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* UI Components */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .nav-tab {
+            position: relative;
+            color: #64748b;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-tab:hover {
+            color: #334155;
+        }
+
+        .dark .nav-tab {
+            color: #94a3b8;
+        }
+
+        .dark .nav-tab:hover {
+            color: #e2e8f0;
+        }
+
+        .nav-tab.active {
+            color: #7c3aed;
+        }
+
+        .dark .nav-tab.active {
+            color: #a78bfa;
+        }
+
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: currentColor;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .type-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: white;
+            border: 2px solid transparent;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark .type-card {
+            background: #1e293b;
+            border-color: transparent;
+        }
+
+        .type-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        .type-card.active {
+            border-color: #7c3aed;
+            background: #f5f3ff;
+            color: #6d28d9;
+        }
+
+        .dark .type-card.active {
+            background: #2e1065;
+            border-color: #8b5cf6;
+            color: #ddd6fe;
+        }
+
+        .custom-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            transition: all 0.2s;
+            color: #0f172a;
+        }
+
+        .dark .custom-input {
+            background: #0f172a;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .color-circle-wrapper {
+            position: relative;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 9999px;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .color-circle-wrapper input[type="color"] {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            padding: 0;
+            margin: 0;
+            border: none;
+            cursor: pointer;
+        }
+
+        .phone-mockup {
+            border: 12px solid #1e293b;
+            border-radius: 3rem;
+            overflow: hidden;
+            position: relative;
+            background: #000;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 280px;
+            height: 580px;
+            margin: 0 auto;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 25px;
+            background: #1e293b;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            z-index: 20;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 0.75rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            scroll-behavior: smooth;
+        }
+
+        .carousel-track::-webkit-scrollbar {
+            height: 0;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .group:hover .carousel-btn {
+            opacity: 1;
+        }
+
+        .dark .carousel-btn {
+            background: #334155;
+            color: white;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1e293b;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 100;
+        }
+
+        #toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
 </head>
 
-<body class="text-slate-600 min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900">
+<body class="min-h-screen flex flex-col text-slate-600 dark:text-slate-300 transition-colors duration-300">
 
-    <!-- Skip Link for Accessibility -->
-    <a href="#main-content" class="skip-link">Pular para conteúdo principal</a>
-
-    <!-- ARIA Live Region for Screen Readers -->
-    <div id="aria-announcements" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
-
-    <!-- Toast -->
-    <div id="toast" class="flex items-center justify-center gap-2" role="alert" aria-live="assertive">
-        <i data-lucide="check-circle" class="w-5 h-5 text-teal-400"></i>
-        <span id="toast-message">Operação realizada!</span>
-    </div>
-
-    <!-- Nav -->
-    <nav class="glass sticky top-0 z-50" role="navigation" aria-label="Navegação principal">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-4">
+    <!--Navbar -->
+    <nav class="sticky top-0 z-40 glass-panel border-b-0 border-b-slate-200 dark:border-b-slate-800">
+        <div class="max-w-7xl mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
                 <div
-                    class="bg-gradient-to-br from-teal-500 to-emerald-600 p-2.5 rounded-xl text-white shadow-lg shadow-teal-500/20 transform transition hover:scale-105">
-                    <i data-lucide="qr-code" class="w-6 h-6" aria-hidden="true"></i>
+                    class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-violet-500/30">
+                    <i data-lucide="qr-code" class="w-6 h-6"></i>
                 </div>
-                <div>
-                    <h1 class="font-extrabold text-xl text-slate-800 tracking-tight">QR Studio <span
-                            class="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-500">Pro</span>
-                    </h1>
-                </div>
+                <h1 class="font-display font-bold text-xl text-slate-800 dark:text-white tracking-tight">QR Studio <span
+                        class="text-violet-600">Pro</span></h1>
             </div>
-            <div class="flex items-center gap-4">
-                <button id="themeToggle" onclick="toggleTheme()" aria-label="Alternar modo escuro/claro"
-                    class="p-2 rounded-full text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition">
-                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden" aria-hidden="true"></i>
-                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block" aria-hidden="true"></i>
-                </button>
-                <button onclick="resetConfig()" aria-label="Restaurar configurações padrão" title="Restaurar Padrão"
-                    class="p-2 rounded-full text-slate-500 hover:bg-slate-100 hover:text-red-500 dark:text-slate-400 dark:hover:bg-slate-800 transition">
-                    <i data-lucide="rotate-ccw" class="w-5 h-5" aria-hidden="true"></i>
-                </button>
-            </div>
+
+            <button id="theme-toggle"
+                class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-500">
+                <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+            </button>
         </div>
     </nav>
 
-    <!-- Main -->
-    <main id="main-content" role="main" aria-label="Gerador de QR Code"
-        class="flex-grow max-w-7xl mx-auto px-4 lg:px-6 py-6 lg:py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 w-full relative">
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 lg:px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-        <!-- Controls Panel (Order 2 on Mobile, Order 1 on Desktop) -->
-        <div class="lg:col-span-7 flex flex-col gap-6 order-2 lg:order-1" role="region"
-            aria-label="Controles de customização">
-            <div
-                class="glass-panel rounded-[2rem] p-1 flex flex-col h-full overflow-hidden relative dark:bg-slate-900/60 dark:border-slate-700">
+        <!-- Editor Section -->
+        <div class="lg:col-span-7 order-2 lg:order-1 flex flex-col gap-6">
 
-                <!-- Tabs -->
-                <div class="p-4 lg:p-6 border-b border-slate-100/50 dark:border-slate-700/50">
-                    <div class="segmented-control overflow-x-auto no-scrollbar">
-                        <button onclick="switchTab('content')" id="tab-content"
-                            class="tab-btn active flex items-center justify-center gap-2 min-w-[100px]"><i
-                                data-lucide="link" class="w-4 h-4"></i> Conteúdo</button>
-                        <button onclick="switchTab('colors')" id="tab-colors"
-                            class="tab-btn flex items-center justify-center gap-2"><i data-lucide="palette"
-                                class="w-4 h-4"></i> Cores</button>
-                        <button onclick="switchTab('design')" id="tab-design"
-                            class="tab-btn flex items-center justify-center gap-2"><i data-lucide="shapes"
-                                class="w-4 h-4"></i> Design</button>
-                        <button onclick="switchTab('logo')" id="tab-logo"
-                            class="tab-btn flex items-center justify-center gap-2"><i data-lucide="image"
-                                class="w-4 h-4"></i> Logo</button>
+            <!-- Tabs Header -->
+            <div class="flex items-center gap-6 border-b border-slate-200 dark:border-slate-800 overflow-x-auto no-scrollbar pb-1"
+                id="tab-container">
+                <button data-tab="data"
+                    class="nav-tab active px-2 py-3 text-sm flex items-center gap-2 whitespace-nowrap">
+                    <i data-lucide="database" class="w-4 h-4"></i> Dados
+                </button>
+                <button data-tab="colors" class="nav-tab px-2 py-3 text-sm flex items-center gap-2 whitespace-nowrap">
+                    <i data-lucide="palette" class="w-4 h-4"></i> Cores
+                </button>
+                <button data-tab="shapes" class="nav-tab px-2 py-3 text-sm flex items-center gap-2 whitespace-nowrap">
+                    <i data-lucide="shapes" class="w-4 h-4"></i> Formas
+                </button>
+                <button data-tab="logo" class="nav-tab px-2 py-3 text-sm flex items-center gap-2 whitespace-nowrap">
+                    <i data-lucide="image" class="w-4 h-4"></i> Marca
+                </button>
+            </div>
+
+            <!-- Tab: DADOS -->
+            <div id="panel-data" class="tab-content active space-y-6">
+
+                <!-- Type Selection -->
+                <div class="space-y-3">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Tipo de Conteúdo</label>
+                    <div class="grid grid-cols-3 sm:grid-cols-4 gap-3" id="type-selector">
+                        <button data-type="url" class="type-card active"><i data-lucide="link"
+                                class="w-6 h-6 mb-1"></i><span class="text-xs font-bold">Link</span></button>
+                        <button data-type="text" class="type-card"><i data-lucide="align-left"
+                                class="w-6 h-6 mb-1"></i><span class="text-xs font-bold">Texto</span></button>
+                        <button data-type="email" class="type-card"><i data-lucide="mail" class="w-6 h-6 mb-1"></i><span
+                                class="text-xs font-bold">Email</span></button>
+                        <button data-type="phone" class="type-card"><i data-lucide="phone"
+                                class="w-6 h-6 mb-1"></i><span class="text-xs font-bold">Tel</span></button>
+                        <button data-type="whatsapp" class="type-card"><i data-lucide="message-circle"
+                                class="w-6 h-6 mb-1"></i><span class="text-xs font-bold">Whats</span></button>
+                        <button data-type="wifi" class="type-card"><i data-lucide="wifi" class="w-6 h-6 mb-1"></i><span
+                                class="text-xs font-bold">WiFi</span></button>
+                        <button data-type="location" class="type-card"><i data-lucide="map-pin"
+                                class="w-6 h-6 mb-1"></i><span class="text-xs font-bold">Local</span></button>
                     </div>
                 </div>
 
-                <!-- Panels -->
-                <div class="p-8 flex-grow overflow-y-auto">
+                <!-- Input Forms -->
+                <div
+                    class="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
 
-                    <!-- Content Panel -->
-                    <div id="content-panel" class="tab-content active space-y-6">
-                        <!-- Content Tabs -->
-                        <div class="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-6">
-                            <button onclick="switchContentTab('link')" id="btn-type-link"
-                                class="type-btn active flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition hover:text-slate-700">Link</button>
-                            <button onclick="switchContentTab('text')" id="btn-type-text"
-                                class="type-btn flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition hover:text-slate-700">Texto</button>
-                            <button onclick="switchContentTab('wifi')" id="btn-type-wifi"
-                                class="type-btn flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition hover:text-slate-700">WiFi</button>
-                            <button onclick="switchContentTab('location')" id="btn-type-location"
-                                class="type-btn flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition hover:text-slate-700">Local</button>
-                            <button onclick="switchContentTab('email')" id="btn-type-email"
-                                class="type-btn flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition hover:text-slate-700">Email</button>
-                            <button onclick="switchContentTab('whatsapp')" id="btn-type-whatsapp"
-                                class="type-btn flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition hover:text-slate-700">WhatsApp</button>
-                            <button onclick="switchContentTab('tel')" id="btn-type-tel"
-                                class="type-btn flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition hover:text-slate-700">Tel</button>
-                            <button onclick="switchContentTab('sms')" id="btn-type-sms"
-                                class="type-btn flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition hover:text-slate-700">SMS</button>
-                            <button onclick="switchContentTab('file')" id="btn-type-file"
-                                class="type-btn flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition hover:text-slate-700">Arquivo</button>
-                        </div>
-
-                        <!-- Link Form -->
-                        <div id="form-link"
-                            class="content-form active bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
-                            <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-3">URL de
-                                Destino</label>
-                            <div class="relative group">
-                                <i data-lucide="globe"
-                                    class="absolute left-4 top-4 w-5 h-5 text-slate-400 group-focus-within:text-teal-500 transition"></i>
-                                <input type="text" id="input-link"
-                                    class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-medium text-slate-700 dark:text-slate-300 placeholder:text-slate-400"
-                                    placeholder="https://..." value="https://harpya.films">
+                    <!-- URL -->
+                    <div id="input-url" class="input-group block space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Endereço do Site
+                                (URL)</label>
+                            <div class="relative">
+                                <i data-lucide="globe" class="absolute left-4 top-3.5 w-5 h-5 text-slate-400"></i>
+                                <input type="text" id="val-url" class="custom-input pl-12"
+                                    placeholder="https://seu-site.com" value="https://harpya.films">
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Text Form -->
-                        <div id="form-text"
-                            class="content-form hidden bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
-                            <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-3">Seu
-                                Texto</label>
-                            <textarea id="input-text" rows="4"
-                                class="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-medium text-slate-700 dark:text-slate-300 placeholder:text-slate-400 resize-none"
+                    <!-- Text -->
+                    <div id="input-text" class="input-group hidden space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-sm font-semibold">Texto Simples</label>
+                            <textarea id="val-text" rows="5" class="custom-input"
                                 placeholder="Digite sua mensagem aqui..."></textarea>
                         </div>
-
-                        <!-- WiFi Form -->
-                        <div id="form-wifi"
-                            class="content-form hidden bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-                            <div>
-                                <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Nome da
-                                    Rede (SSID)</label>
-                                <div class="relative group">
-                                    <i data-lucide="wifi"
-                                        class="absolute left-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-teal-500 transition"></i>
-                                    <input type="text" id="wifi-ssid"
-                                        class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-medium text-slate-700 dark:text-slate-300"
-                                        placeholder="Minha Rede WiFi">
-                                </div>
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Senha</label>
-                                <div class="relative group">
-                                    <i data-lucide="key"
-                                        class="absolute left-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-teal-500 transition"></i>
-                                    <input type="text" id="wifi-pass"
-                                        class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-medium text-slate-700 dark:text-slate-300"
-                                        placeholder="Senha da rede">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label
-                                        class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Segurança</label>
-                                    <select id="wifi-type"
-                                        class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-medium text-slate-700 dark:text-slate-300">
-                                        <option value="WPA">WPA/WPA2</option>
-                                        <option value="WEP">WEP</option>
-                                        <option value="nopass">Sem Senha</option>
-                                    </select>
-                                </div>
-                                <div class="flex items-center pt-6">
-                                    <label class="flex items-center cursor-pointer gap-2">
-                                        <input type="checkbox" id="wifi-hidden" class="accent-teal-500 w-5 h-5">
-                                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Rede
-                                            Oculta?</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Location Form -->
-                        <div id="form-location"
-                            class="content-form hidden bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-
-                            <!-- Google Maps Link Input -->
-                            <div>
-                                <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Link do
-                                    Google Maps</label>
-                                <div class="relative group">
-                                    <i data-lucide="map"
-                                        class="absolute left-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-teal-500 transition"></i>
-                                    <input type="text" id="loc-url"
-                                        class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-medium text-slate-700 dark:text-slate-300"
-                                        placeholder="Cole o link do Google Maps aqui">
-                                </div>
-                            </div>
-
-                            <div class="relative py-2 flex items-center">
-                                <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
-                                <span class="flex-shrink-0 mx-4 text-xs font-bold text-slate-400 uppercase">OU
-                                    Coordenadas</span>
-                                <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label
-                                        class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Latitude</label>
-                                    <input type="text" id="loc-lat"
-                                        class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-medium text-slate-700 dark:text-slate-300"
-                                        placeholder="-23.5505">
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Longitude</label>
-                                    <input type="text" id="loc-long"
-                                        class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition font-medium text-slate-700 dark:text-slate-300"
-                                        placeholder="-46.6333">
-                                </div>
-                            </div>
-                            <button onclick="getCurrentLocation()"
-                                class="w-full flex items-center justify-center gap-2 py-3 bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400 font-bold rounded-xl border border-teal-100 dark:border-teal-800 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition">
-                                <i data-lucide="map-pin" class="w-4 h-4"></i>
-                                Usar Localização Atual
-                            </button>
-                        </div>
-
                     </div>
 
-                    <!-- Email Form -->
-                    <div id="form-email"
-                        class="content-form hidden bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Para</label>
-                            <input type="email" id="email-to"
-                                class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
-                                placeholder="exemplo@email.com">
+                    <!-- Email -->
+                    <div id="input-email" class="input-group hidden space-y-4">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="space-y-1"><label class="text-sm font-semibold">Email</label><input type="email"
+                                    id="val-email-addr" class="custom-input" placeholder="contato@empresa.com"></div>
+                            <div class="space-y-1"><label class="text-sm font-semibold">Assunto</label><input
+                                    type="text" id="val-email-sub" class="custom-input" placeholder="Dúvida..."></div>
                         </div>
-                        <div>
-                            <label
-                                class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Assunto</label>
-                            <input type="text" id="email-subject"
-                                class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
-                                placeholder="Assunto do email">
-                        </div>
-                        <div>
-                            <label
-                                class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Mensagem</label>
-                            <textarea id="email-body" rows="3"
-                                class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition resize-none"
-                                placeholder="Corpo do email..."></textarea>
+                        <div class="space-y-1"><label class="text-sm font-semibold">Mensagem</label><textarea
+                                id="val-email-body" rows="3" class="custom-input" placeholder="Olá..."></textarea></div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div id="input-phone" class="input-group hidden space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-sm font-semibold">Número</label>
+                            <div class="relative">
+                                <i data-lucide="phone" class="absolute left-4 top-3.5 w-5 h-5 text-slate-400"></i>
+                                <input type="tel" id="val-phone" class="custom-input pl-12"
+                                    placeholder="+55 11 99999-9999">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- WhatsApp Form -->
-                    <div id="form-whatsapp"
-                        class="content-form hidden bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Número
-                                (com DDI e DDD)</label>
-                            <input type="tel" id="wa-number"
-                                class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
-                                placeholder="+55 11 99999-9999">
-                            <p class="text-xs text-slate-400 mt-1">Digite apenas números, vamos formatar para você.</p>
+                    <!-- Whatsapp -->
+                    <div id="input-whatsapp" class="input-group hidden space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-sm font-semibold">Número do WhatsApp (com DDI)</label>
+                            <div class="relative">
+                                <i data-lucide="message-circle"
+                                    class="absolute left-4 top-3.5 w-5 h-5 text-slate-400"></i>
+                                <input type="tel" id="val-whats-num" class="custom-input pl-12"
+                                    placeholder="+55 11 99999-9999">
+                            </div>
                         </div>
-                        <div>
-                            <label
-                                class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Mensagem</label>
-                            <textarea id="wa-message" rows="3"
-                                class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition resize-none"
-                                placeholder="Olá! Gostaria de mais informações..."></textarea>
+                        <div class="space-y-1"><label class="text-sm font-semibold">Mensagem Inicial</label><textarea
+                                id="val-whats-msg" rows="2" class="custom-input"
+                                placeholder="Olá! Vi seu QR Code."></textarea></div>
+                    </div>
+
+                    <!-- WiFi -->
+                    <div id="input-wifi" class="input-group hidden space-y-4">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="space-y-1"><label class="text-sm font-semibold">SSID</label><input type="text"
+                                    id="val-wifi-ssid" class="custom-input" placeholder="Minha Wifi"></div>
+                            <div class="space-y-1"><label class="text-sm font-semibold">Senha</label><input type="text"
+                                    id="val-wifi-pass" class="custom-input" placeholder="Senha123"></div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4 items-end">
+                            <div class="space-y-1">
+                                <label class="text-sm font-semibold">Segurança</label>
+                                <select id="val-wifi-type" class="custom-input">
+                                    <option value="WPA">WPA/WPA2</option>
+                                    <option value="WEP">WEP</option>
+                                    <option value="nopass">Sem Senha</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <input type="checkbox" id="val-wifi-hidden" class="w-4 h-4 accent-violet-600">
+                                <label for="val-wifi-hidden" class="text-sm font-medium">Rede Oculta</label>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Phone Form -->
-                    <div id="form-tel"
-                        class="content-form hidden bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Número de
-                                Telefone</label>
-                            <input type="tel" id="tel-number"
-                                class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
-                                placeholder="+55 11 99999-9999">
+
+                    <!-- Location -->
+                    <div id="input-location" class="input-group hidden space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-1"><label class="text-sm font-semibold">Latitude</label><input
+                                    type="text" id="val-loc-lat" class="custom-input" placeholder="-23.5505"></div>
+                            <div class="space-y-1"><label class="text-sm font-semibold">Longitude</label><input
+                                    type="text" id="val-loc-lng" class="custom-input" placeholder="-46.6333"></div>
                         </div>
                     </div>
 
-                    <!-- SMS Form -->
-                    <div id="form-sms"
-                        class="content-form hidden bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Número de
-                                Destino</label>
-                            <input type="tel" id="sms-number"
-                                class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
-                                placeholder="+55 11 99999-9999">
-                        </div>
-                        <div>
-                            <label
-                                class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Mensagem</label>
-                            <textarea id="sms-message" rows="3"
-                                class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition resize-none"
-                                placeholder="Sua mensagem SMS..."></textarea>
+                    <!-- Options Footer -->
+                    <div class="pt-4 border-t border-slate-100 dark:border-slate-700 mt-4">
+                        <div class="flex items-center justify-between">
+                            <div class="space-y-0.5">
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Correção de
+                                    Erro</label>
+                                <p class="text-[10px] text-slate-400">Aumente se usar logo no centro.</p>
+                            </div>
+                            <select id="config-ecc" class="custom-input w-32 py-2 text-sm">
+                                <option value="L">Baixo (~7%)</option>
+                                <option value="M" selected>Médio (~15%)</option>
+                                <option value="Q">Quartil (~25%)</option>
+                                <option value="H">Alto (~30%)</option>
+                            </select>
                         </div>
                     </div>
 
-                    <!-- File Form -->
-                    <div id="form-file"
-                        class="content-form hidden bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-
-                        <div
-                            class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
-                            <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2 flex items-center gap-2">
-                                <i data-lucide="info" class="w-4 h-4"></i> Como funciona?
-                            </h3>
-                            <p class="text-sm text-blue-600 dark:text-blue-300">
-                                QR Codes não podem armazenar arquivos pesados (PDF, Imagens) diretamente.
-                                <br><br>
-                                <strong>Passo a passo:</strong>
-                            <ol class="list-decimal ml-4 mt-2 space-y-1">
-                                <li>Faça upload do seu arquivo no Google Drive, Dropbox ou seu site.</li>
-                                <li>Copie o link de compartilhamento ("Link público").</li>
-                                <li>Cole o link abaixo.</li>
-                            </ol>
-                            </p>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Link do
-                                Arquivo (PDF/Imagem)</label>
-                            <input type="url" id="file-url"
-                                class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition"
-                                placeholder="https://drive.google.com/...">
-                        </div>
-                    </div>
                 </div>
+            </div>
 
-            </div> <!-- End of content-panel -->
-
-            <!-- Colors Panel -->
-            <div id="colors-panel" class="tab-content space-y-6">
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 block">Paletas
-                        Rápidas</label>
-                    <div class="carousel-wrapper">
-                        <button class="carousel-btn left" onclick="scrollCarousel('colorPresetsGrid', -1)"><i
-                                data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                        <div class="carousel-container" id="colorPresetsGrid">
-                            <!-- Injected JS -->
-                        </div>
-                        <button class="carousel-btn right" onclick="scrollCarousel('colorPresetsGrid', 1)"><i
-                                data-lucide="chevron-right" class="w-5 h-5"></i></button>
-                    </div>
+            <!-- Tab: CORES -->
+            <div id="panel-colors" class="tab-content space-y-8">
+                <div class="space-y-3 relative group">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Paletas Prontas</label>
+                    <button class="carousel-btn left-0" id="scroll-left-preset"><i data-lucide="chevron-left"
+                            class="w-4 h-4"></i></button>
+                    <div id="presets-track" class="carousel-track"></div>
+                    <button class="carousel-btn right-0" id="scroll-right-preset"><i data-lucide="chevron-right"
+                            class="w-4 h-4"></i></button>
                 </div>
 
                 <div
-                    class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                    <button type="button"
-                        class="accordion-trigger w-full flex items-center justify-between text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-teal-600 transition">
-                        <span><i data-lucide="sliders" class="w-4 h-4 inline mr-2 text-teal-500"></i> Cores
-                            Avançadas</span>
-                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+                    class="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <button id="btn-adv-colors"
+                        class="w-full p-6 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-800/50 transition group">
+                        <span class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                            <i data-lucide="sliders" class="w-4 h-4 text-violet-500"></i> Personalização Avançada
+                        </span>
+                        <i id="icon-adv-colors" data-lucide="chevron-down"
+                            class="w-5 h-5 text-slate-400 group-hover:text-violet-500 transition-transform duration-300"></i>
                     </button>
 
-                    <div class="accordion-content">
-                        <div class="grid grid-cols-2 gap-4">
-                            <!-- Background Color -->
-                            <div class="space-y-1">
-                                <div class="flex justify-between items-center">
-                                    <label class="text-xs font-bold text-slate-600 dark:text-slate-400">Fundo</label>
-                                    <div class="flex items-center gap-1">
-                                        <input type="checkbox" id="bgTransparentToggle"
-                                            class="accent-teal-600 w-3 h-3 cursor-pointer">
-                                        <span class="text-[9px] uppercase font-bold text-slate-400">Transparente</span>
-                                    </div>
-                                </div>
-                                <div class="color-card p-2 gap-2 h-10 dark:bg-slate-900 dark:border-slate-600"
-                                    id="bgColorWrapper">
-                                    <div class="color-circle w-6 h-6"><input type="color" id="bgColor" value="#ffffff">
-                                    </div>
-                                    <span id="bgColorDisplay"
-                                        class="font-mono text-xs font-semibold dark:text-slate-300">#FFFFFF</span>
-                                </div>
-                            </div>
-
-                            <!-- Dots Color (renamed to Main Color / Gradient) -->
-                            <div class="space-y-2 col-span-2">
-                                <div class="flex justify-between items-center">
-                                    <label class="text-xs font-bold text-slate-600 dark:text-slate-400">Preenchimento
-                                        Principal</label>
-                                    <div class="flex bg-slate-100 dark:bg-slate-900 rounded-lg p-0.5">
-                                        <button onclick="setGradientMode('none')" id="btnSolid"
-                                            class="px-2 py-0.5 text-[9px] font-bold rounded-md bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm transition">Sólido</button>
-                                        <button onclick="setGradientMode('linear')" id="btnGradient"
-                                            class="px-2 py-0.5 text-[9px] font-bold rounded-md text-slate-400 hover:text-slate-600 transition">Gradiente</button>
-                                    </div>
-                                </div>
-
-                                <!-- Solid Input -->
-                                <div id="solidColorInput"
-                                    class="color-card p-2 gap-2 h-10 dark:bg-slate-900 dark:border-slate-600">
-                                    <div class="color-circle w-6 h-6"><input type="color" id="dotsColor"
-                                            value="#000000"></div>
-                                    <span id="dotsColorDisplay"
-                                        class="font-mono text-xs font-semibold dark:text-slate-300">#000000</span>
-                                </div>
-
-                                <!-- Gradient Inputs -->
-                                <div id="gradientInputs" class="hidden grid grid-cols-2 gap-2">
-                                    <div class="color-card p-2 gap-2 h-10 dark:bg-slate-900 dark:border-slate-600">
-                                        <div class="color-circle w-6 h-6"><input type="color" id="gradColor1"
-                                                value="#000000"></div>
-                                        <span class="text-[10px] font-bold text-slate-400">Início</span>
-                                    </div>
-                                    <div class="color-card p-2 gap-2 h-10 dark:bg-slate-900 dark:border-slate-600">
-                                        <div class="color-circle w-6 h-6"><input type="color" id="gradColor2"
-                                                value="#000000"></div>
-                                        <span class="text-[10px] font-bold text-slate-400">Fim</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Frame Color -->
-                            <div class="space-y-1">
-                                <label class="text-xs font-bold text-slate-600 dark:text-slate-400">Moldura dos
-                                    Cantos</label>
-                                <div class="color-card p-2 gap-2 h-10 dark:bg-slate-900 dark:border-slate-600">
-                                    <div class="color-circle w-6 h-6"><input type="color" id="frameColor"
-                                            value="#000000"></div>
-                                    <span id="frameColorDisplay"
-                                        class="font-mono text-xs font-semibold dark:text-slate-300">#000000</span>
-                                </div>
-                            </div>
-
-                            <!-- Center Color -->
-                            <div class="space-y-1">
-                                <label class="text-xs font-bold text-slate-600 dark:text-slate-400">Miolo dos
-                                    Cantos</label>
-                                <div class="color-card p-2 gap-2 h-10 dark:bg-slate-900 dark:border-slate-600">
-                                    <div class="color-circle w-6 h-6"><input type="color" id="eyeDotColor"
-                                            value="#000000"></div>
-                                    <span id="eyeDotColorDisplay"
-                                        class="font-mono text-xs font-semibold dark:text-slate-300">#000000</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Design Panel -->
-            <div id="design-panel" class="tab-content space-y-8">
-                <div>
-                    <label
-                        class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2"><i
-                            data-lucide="sparkles" class="w-4 h-4 text-teal-500"></i> Temas Rápidos</label>
-                    <div class="carousel-wrapper">
-                        <button class="carousel-btn left" onclick="scrollCarousel('themesGrid', -1)"><i
-                                data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                        <div class="carousel-container" id="themesGrid">
-                            <!-- Themes injected by JS -->
-                        </div>
-                        <button class="carousel-btn right" onclick="scrollCarousel('themesGrid', 1)"><i
-                                data-lucide="chevron-right" class="w-5 h-5"></i></button>
-                    </div>
-                </div>
-
-                <div>
-                    <label
-                        class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2"><i
-                            data-lucide="grid-3x3" class="w-4 h-4 text-teal-500"></i> Estilo dos Pontos</label>
-                    <div class="carousel-wrapper">
-                        <button class="carousel-btn left" onclick="scrollCarousel('bodyShapeGrid', -1)"><i
-                                data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                        <div class="carousel-container" id="bodyShapeGrid"></div>
-                        <button class="carousel-btn right" onclick="scrollCarousel('bodyShapeGrid', 1)"><i
-                                data-lucide="chevron-right" class="w-5 h-5"></i></button>
-                    </div>
-                </div>
-
-                <div>
-                    <label
-                        class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2"><i
-                            data-lucide="maximize" class="w-4 h-4 text-teal-500"></i> Moldura dos Cantos</label>
-                    <div class="carousel-wrapper">
-                        <button class="carousel-btn left" onclick="scrollCarousel('eyeFrameGrid', -1)"><i
-                                data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                        <div class="carousel-container" id="eyeFrameGrid"></div>
-                        <button class="carousel-btn right" onclick="scrollCarousel('eyeFrameGrid', 1)"><i
-                                data-lucide="chevron-right" class="w-5 h-5"></i></button>
-                    </div>
-                </div>
-
-                <div>
-                    <label
-                        class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2"><i
-                            data-lucide="circle-dot" class="w-4 h-4 text-teal-500"></i> Miolo dos Cantos</label>
-                    <div class="carousel-wrapper">
-                        <button class="carousel-btn left" onclick="scrollCarousel('eyeDotGrid', -1)"><i
-                                data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                        <div class="carousel-container" id="eyeDotGrid"></div>
-                        <button class="carousel-btn right" onclick="scrollCarousel('eyeDotGrid', 1)"><i
-                                data-lucide="chevron-right" class="w-5 h-5"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Logo Panel -->
-            <div id="logo-panel" class="tab-content space-y-6">
-                <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl p-10 text-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer relative group"
-                    id="dropzone">
-                    <input type="file" id="logoInput"
-                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-50" accept="image/*">
-                    <div class="space-y-4 group-hover:scale-105 transition duration-300 pointer-events-none">
+                    <div id="content-adv-colors"
+                        class="hidden px-6 pb-6 space-y-6 border-t border-slate-100 dark:border-slate-700/50">
                         <div
-                            class="w-16 h-16 bg-teal-50 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto text-teal-600 dark:text-teal-400 shadow-sm">
-                            <i data-lucide="upload-cloud" class="w-8 h-8"></i>
+                            class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl mt-4">
+                            <span class="text-sm font-semibold">Cor de Fundo</span>
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-2 mr-2">
+                                    <span class="text-xs font-medium text-slate-500">Transparente</span>
+                                    <input type="checkbox" id="check-transparent"
+                                        class="toggle w-4 h-4 accent-violet-600">
+                                </div>
+                                <div id="bg-color-wrap" class="color-circle-wrapper">
+                                    <input type="color" id="color-bg" value="#ffffff">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-semibold">Cor dos Pontos</span>
+                                <div class="flex bg-slate-100 dark:bg-slate-900 rounded-lg p-1">
+                                    <button id="btn-solid"
+                                        class="px-3 py-1 text-xs font-bold rounded bg-white dark:bg-slate-700 shadow-sm transition">Sólido</button>
+                                    <button id="btn-grad"
+                                        class="px-3 py-1 text-xs font-bold rounded text-slate-500 hover:text-slate-700 transition">Gradiente</button>
+                                </div>
+                            </div>
+                            <div id="solid-input"
+                                class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                                <span class="text-xs font-mono text-slate-400" id="hex-dots">#000000</span>
+                                <div class="color-circle-wrapper"><input type="color" id="color-dots" value="#000000">
+                                </div>
+                            </div>
+                            <div id="grad-input" class="hidden grid grid-cols-2 gap-3">
+                                <div
+                                    class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                                    <span class="text-xs font-medium text-slate-500">Início</span>
+                                    <div class="color-circle-wrapper"><input type="color" id="color-grad-1"
+                                            value="#000000"></div>
+                                </div>
+                                <div
+                                    class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                                    <span class="text-xs font-medium text-slate-500">Fim</span>
+                                    <div class="color-circle-wrapper"><input type="color" id="color-grad-2"
+                                            value="#4c1d95"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <span class="text-sm font-semibold block">Moldura</span>
+                                <div
+                                    class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                                    <span class="text-xs font-mono text-slate-400" id="hex-frame">#000000</span>
+                                    <div class="color-circle-wrapper"><input type="color" id="color-frame"
+                                            value="#000000"></div>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <span class="text-sm font-semibold block">Centro</span>
+                                <div
+                                    class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                                    <span class="text-xs font-mono text-slate-400" id="hex-eye">#000000</span>
+                                    <div class="color-circle-wrapper"><input type="color" id="color-eye"
+                                            value="#000000"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: FORMAS -->
+            <div id="panel-shapes" class="tab-content space-y-8">
+                <!-- Estilos Prontos Section -->
+                <div class="space-y-3 relative group">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Estilos Prontos</label>
+                    <div id="style-presets-track" class="carousel-track"></div>
+                </div>
+
+                <div class="border-t border-slate-100 dark:border-slate-800 my-4"></div>
+
+                <div class="space-y-3 relative group">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Estilo dos Pontos</label>
+                    <div id="shape-body-track" class="carousel-track"></div>
+                </div>
+                <div class="space-y-3 relative group">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Moldura dos Cantos</label>
+                    <div id="shape-frame-track" class="carousel-track"></div>
+                </div>
+                <div class="space-y-3 relative group">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Centro dos Cantos</label>
+                    <div id="shape-eye-track" class="carousel-track"></div>
+                </div>
+            </div>
+
+            <!-- Tab: MARCA -->
+            <div id="panel-logo" class="tab-content space-y-6">
+                <div id="upload-zone"
+                    class="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-12 text-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer relative group">
+                    <input type="file" id="file-logo"
+                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*">
+                    <div class="space-y-4 group-hover:scale-105 transition duration-300">
+                        <div
+                            class="w-20 h-20 bg-violet-50 dark:bg-violet-900/20 rounded-full flex items-center justify-center mx-auto text-violet-600 shadow-sm">
+                            <i data-lucide="upload-cloud" class="w-10 h-10"></i>
                         </div>
                         <div>
-                            <p class="text-base font-bold text-slate-700 dark:text-slate-200">Clique para enviar
-                                logo</p>
+                            <h3 class="text-lg font-bold text-slate-800 dark:text-white">Carregar Logotipo</h3>
+                            <p class="text-sm text-slate-400">Arraste ou clique para selecionar (PNG, JPG)</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Logo Controls -->
-                <div id="logoControls" class="hidden space-y-6">
-                    <div
-                        class="bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800/50 rounded-xl p-4 flex items-center gap-4">
+                <div id="logo-options"
+                    class="hidden bg-white dark:bg-slate-800/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-6">
+                    <div class="flex items-center gap-4">
                         <div
-                            class="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-800 flex items-center justify-center text-teal-600 dark:text-teal-400">
-                            <i data-lucide="check" class="w-5 h-5"></i>
+                            class="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-900 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-slate-700">
+                            <img id="logo-preview" src="" class="w-full h-full object-contain p-1">
                         </div>
                         <div class="flex-grow">
-                            <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200">Logo Carregada</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">A logo foi aplicada ao QR Code
-                            </p>
+                            <h4 class="font-bold text-slate-800 dark:text-white">Logotipo Ativo</h4>
+                            <p class="text-xs text-slate-400">Imagem aplicada ao centro</p>
                         </div>
-                        <button id="removeLogoBtn"
-                            class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition"
-                            title="Remover Logo">
-                            <i data-lucide="trash-2" class="w-5 h-5"></i>
-                        </button>
+                        <button id="btn-remove-logo" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition"><i
+                                data-lucide="trash-2" class="w-5 h-5"></i></button>
                     </div>
 
-                    <!-- Size Control Slider -->
-                    <div
-                        class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-100 dark:border-slate-700">
-                        <div class="flex justify-between items-center mb-4">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-200">Tamanho da
-                                Logo</label>
-                            <span
-                                class="text-xs font-mono bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded text-slate-600 dark:text-slate-300"
-                                id="logoSizeValue">25%</span>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <label class="text-sm font-semibold">Tamanho</label>
+                            <span id="logo-size-val"
+                                class="text-xs font-mono bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">25%</span>
                         </div>
-                        <input type="range" id="logoSizeInput" min="0.1" max="0.5" step="0.01" value="0.25"
-                            class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-teal-500">
-                        <div class="flex justify-between mt-2 text-[10px] text-slate-400 font-medium">
-                            <span>Pequeno</span>
-                            <span>Grande</span>
-                        </div>
+                        <input type="range" id="logo-size" min="0.1" max="0.4" step="0.01" value="0.25"
+                            class="w-full accent-violet-600 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
                     </div>
                 </div>
             </div>
-
-        </div>
-        </div>
         </div>
 
-        <!-- Preview Panel (Order 1 on Mobile, Order 2 on Desktop) -->
-        <div class="lg:col-span-5 relative order-1 lg:order-2">
-            <div class="sticky top-4 lg:top-28 flex flex-col items-center gap-6 lg:gap-8">
-
-                <div class="perspective-1000">
-                    <div
-                        class="phone-frame transform duration-500 hover:rotate-y-6 hover:scale-[1.02] transition-transform mx-auto">
-                        <div class="phone-notch"></div>
-                        <div class="phone-reflection"></div>
-
-                        <!-- Screen -->
-                        <div class="h-[550px] bg-slate-50 flex flex-col relative w-[260px] mx-auto">
-                            <!-- Status Bar Area -->
-                            <div class="h-10 w-full bg-white/50 backdrop-blur z-20"></div>
-
-                            <!-- App Content -->
-                            <div class="flex-grow flex flex-col items-center justify-center p-6 relative">
-                                <div class="absolute inset-0 opacity-[0.03]"
-                                    style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 24px 24px;">
-                                </div>
-
-                                <div
-                                    class="bg-white p-4 rounded-3xl shadow-2xl shadow-slate-400/20 relative z-10 ring-1 ring-black/5">
-                                    <div id="qr-code-container"></div>
-                                </div>
-
-                                <div class="mt-6 text-center space-y-1">
-                                    <h3 class="text-lg font-bold text-slate-900">Scan Me</h3>
-                                    <p class="text-xs text-slate-500 font-medium">Harpya Films Studio</p>
-                                </div>
+        <!-- Preview Section -->
+        <div class="lg:col-span-5 order-1 lg:order-2 flex flex-col items-center">
+            <div class="sticky top-24 space-y-8 w-full flex flex-col items-center">
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="w-full h-full bg-slate-50 relative flex flex-col">
+                        <div
+                            class="h-16 bg-white/80 backdrop-blur border-b border-slate-100 flex items-end justify-center pb-2 z-10">
+                            <span class="font-semibold text-sm text-slate-800">Scanner</span>
+                        </div>
+                        <div class="flex-grow flex flex-col items-center justify-center p-6 relative overflow-hidden">
+                            <div class="absolute inset-0 opacity-[0.03]"
+                                style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 20px 20px;">
                             </div>
-
-                            <!-- Nav Bar -->
                             <div
-                                class="h-16 bg-white border-t border-slate-100 flex items-center justify-around px-8 pb-3">
-                                <i data-lucide="home" class="w-5 h-5 text-slate-300"></i>
-                                <div
-                                    class="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-teal-500/40 transform -translate-y-3">
-                                    <i data-lucide="qr-code" class="w-5 h-5"></i>
-                                </div>
-                                <i data-lucide="user" class="w-5 h-5 text-slate-300"></i>
+                                class="bg-white p-4 rounded-3xl shadow-xl shadow-slate-200 relative z-10 w-full aspect-square flex items-center justify-center">
+                                <div id="qr-target" class="w-full h-full"></div>
                             </div>
+                            <div class="mt-8 text-center">
+                                <h3 class="font-bold text-slate-900 text-lg">Escaneie-me</h3>
+                                <p class="text-xs text-slate-500 mt-1">Criado com QR Studio Pro</p>
+                            </div>
+                        </div>
+                        <div class="h-16 bg-white border-t border-slate-100 flex items-center justify-around px-8 pb-4">
+                            <div class="w-8 h-1 rounded-full bg-slate-200"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Download Card -->
-                <div
-                    class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl shadow-glass border border-white/60 dark:border-slate-700/60 p-6 w-full max-w-[320px]">
-                    <div class="mb-4">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Nome
-                            do
+                <div class="glass-panel p-4 rounded-2xl w-full max-w-xs space-y-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nome do
                             Arquivo</label>
-                        <input type="text" id="fileName" value="harpya-qr"
-                            class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 outline-none focus:border-teal-500 transition">
+                        <input type="text" id="filename" value="meu-qr-code"
+                            class="w-full bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm outline-none focus:border-violet-500 transition">
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                        <button onclick="downloadQR('png')"
-                            class="flex flex-col items-center justify-center gap-1 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white py-3 px-4 rounded-xl transition shadow-lg shadow-slate-900/20 transform active:scale-95">
-                            <i data-lucide="download" class="w-5 h-5 mb-1"></i>
-                            <span class="text-xs font-bold">Salvar PNG</span>
+                        <button id="btn-download"
+                            class="flex items-center justify-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-slate-900/20 hover:scale-[1.02] transition">
+                            <i data-lucide="download" class="w-4 h-4"></i> PNG
                         </button>
-
-
-                        <button onclick="copyToClipboard()"
-                            class="flex flex-col items-center justify-center gap-1 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 hover:border-teal-100 hover:bg-teal-50 text-slate-600 dark:text-slate-300 font-semibold py-3 px-4 rounded-xl transition transform active:scale-95">
-                            <i data-lucide="copy" class="w-5 h-5 mb-1"></i>
-                            <span class="text-xs font-bold">Copiar</span>
+                        <button id="btn-copy"
+                            class="flex items-center justify-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-2.5 rounded-xl font-bold text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                            <i data-lucide="copy" class="w-4 h-4"></i> Copiar
                         </button>
                     </div>
                 </div>
-
             </div>
         </div>
-
     </main>
 
-    <script src="js/app.js"></script>
+    <div id="toast"><i data-lucide="check-circle" class="text-green-400 w-5 h-5"></i><span class="text-sm font-medium"
+            id="toast-msg">Sucesso!</span></div>
+
+    <script>
+        // State
+        const state = {
+            content: { type: 'url', value: 'https://harpya.films' },
+            config: { ecc: 'M' },
+            colors: { bg: '#ffffff', dots: '#000000', frame: '#000000', eye: '#000000', gradStart: '#000000', gradEnd: '#4c1d95', isGradient: false, isTransparent: false },
+            design: { body: 'square', frame: 'square', eye: 'square' },
+            logo: { src: null, size: 0.25 },
+            debounceTimer: null
+        };
+
+        const els = {
+            qrTarget: document.getElementById('qr-target'),
+            inputs: ['url', 'text', 'email', 'phone', 'whatsapp', 'wifi', 'location'],
+            tabs: document.querySelectorAll('.nav-tab'),
+            typeBtns: document.querySelectorAll('#type-selector button'),
+        };
+
+        // --- Core Logic ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initIcons();
+            initTabs();
+            initTypeSelector();
+            initTypeSelector();
+            renderShapeOptions();
+            renderColorPresets();
+            renderStylePresets();
+            setupEventListeners();
+            initTheme();
+            updateQR();
+        });
+
+        function initIcons() {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function initTabs() {
+            const container = document.getElementById('tab-container');
+            container.addEventListener('click', (e) => {
+                const btn = e.target.closest('.nav-tab');
+                if (!btn) return;
+
+                const tabId = btn.dataset.tab;
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(`panel-${tabId}`).classList.add('active');
+            });
+        }
+
+        function initTypeSelector() {
+            const container = document.getElementById('type-selector');
+            container.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+
+                const type = btn.dataset.type;
+                els.typeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                els.inputs.forEach(id => document.getElementById(`input-${id}`).classList.add('hidden'));
+                document.getElementById(`input-${type}`).classList.remove('hidden');
+
+                state.content.type = type;
+                updateQR();
+            });
+        }
+
+        function setupEventListeners() {
+            // Global Input Debounce
+            document.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.type === 'range' || el.type === 'color' || el.type === 'checkbox' || el.type === 'file') {
+                    el.addEventListener('input', handleInput);
+                } else {
+                    el.addEventListener('input', () => {
+                        clearTimeout(state.debounceTimer);
+                        state.debounceTimer = setTimeout(handleInput, 300);
+                    });
+                }
+            });
+
+            // Specific Bindings
+            bindColor('color-bg', 'bg');
+            bindColor('color-dots', 'dots', 'hex-dots');
+            bindColor('color-frame', 'frame', 'hex-frame');
+            bindColor('color-eye', 'eye', 'hex-eye');
+            bindColor('color-grad-1', 'gradStart');
+            bindColor('color-grad-2', 'gradEnd');
+
+            document.getElementById('config-ecc').addEventListener('change', (e) => {
+                state.config.ecc = e.target.value;
+                updateQR();
+            });
+
+            document.getElementById('check-transparent').addEventListener('change', (e) => {
+                state.colors.isTransparent = e.target.checked;
+                document.getElementById('bg-color-wrap').style.opacity = e.target.checked ? '0.3' : '1';
+                updateQR();
+            });
+
+            document.getElementById('btn-solid').addEventListener('click', () => setGradient(false));
+            document.getElementById('btn-grad').addEventListener('click', () => setGradient(true));
+
+            // Logo
+            document.getElementById('file-logo').addEventListener('change', handleLogoUpload);
+            document.getElementById('btn-remove-logo').addEventListener('click', removeLogo);
+
+            // Actions
+            document.getElementById('btn-download').addEventListener('click', downloadPNG);
+            document.getElementById('btn-copy').addEventListener('click', copyImage);
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+            // Carousel
+            document.getElementById('scroll-left-preset').addEventListener('click', () => scrollX('presets-track', -1));
+            document.getElementById('scroll-right-preset').addEventListener('click', () => scrollX('presets-track', 1));
+
+            // Accordion Advanced Colors
+            document.getElementById('btn-adv-colors').addEventListener('click', () => {
+                const content = document.getElementById('content-adv-colors');
+                const icon = document.getElementById('icon-adv-colors');
+                content.classList.toggle('hidden');
+                icon.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+            });
+
+            // Shape Delegation
+            ['body', 'frame', 'eye'].forEach(cat => {
+                document.getElementById(`shape-${cat}-track`).addEventListener('click', (e) => {
+                    const btn = e.target.closest('button');
+                    if (btn) {
+                        state.design[cat] = btn.dataset.shape;
+                        renderShapeOptions();
+                        updateQR();
+                    }
+                });
+            });
+        }
+
+        function handleInput(e) {
+            // Update values based on target if needed, then regen
+            if (e && e.target.id === 'logo-size') {
+                state.logo.size = parseFloat(e.target.value);
+                document.getElementById('logo-size-val').innerText = Math.round(state.logo.size * 100) + '%';
+            }
+            updateContentFromInputs();
+            updateQR();
+        }
+
+        function bindColor(id, key, displayId) {
+            const el = document.getElementById(id);
+            el.addEventListener('input', (e) => {
+                state.colors[key] = e.target.value;
+                if (displayId) document.getElementById(displayId).innerText = e.target.value.toUpperCase();
+                updateQR();
+            });
+        }
+
+        function updateContentFromInputs() {
+            const type = state.content.type;
+            const getVal = (id) => document.getElementById(id).value;
+            let val = "";
+
+            try {
+                if (type === 'url') val = getVal('val-url');
+                if (type === 'text') val = getVal('val-text');
+                if (type === 'email') val = `mailto:${getVal('val-email-addr')}?subject=${encodeURIComponent(getVal('val-email-sub'))}&body=${encodeURIComponent(getVal('val-email-body'))}`;
+                if (type === 'phone') val = `tel:${getVal('val-phone').replace(/\s/g, '')}`;
+                if (type === 'whatsapp') val = `https://wa.me/${getVal('val-whats-num').replace(/\D/g, '')}?text=${encodeURIComponent(getVal('val-whats-msg'))}`;
+                if (type === 'location') val = `https://maps.google.com/local?q=${getVal('val-loc-lat')},${getVal('val-loc-lng')}`;
+
+                if (type === 'wifi') {
+                    const escapeWifi = (str) => str.replace(/([\\;,:])/g, '\\$1');
+                    const s = escapeWifi(getVal('val-wifi-ssid'));
+                    const p = escapeWifi(getVal('val-wifi-pass'));
+                    const t = getVal('val-wifi-type');
+                    const h = document.getElementById('val-wifi-hidden').checked;
+                    val = `WIFI:T:${t};S:${s};P:${p};H:${h};;`;
+                }
+
+                if (type === 'vcard') {
+                    const n = getVal('val-vcard-name');
+                    const org = getVal('val-vcard-org');
+                    const tel = getVal('val-vcard-tel');
+                    const email = getVal('val-vcard-email');
+                    const url = getVal('val-vcard-url');
+                    const title = getVal('val-vcard-title');
+
+                    val = `BEGIN:VCARD\nVERSION:3.0\nN:${n};;;;\nFN:${n}\nORG:${org}\nTITLE:${title}\nTEL:${tel}\nEMAIL:${email}\nURL:${url}\nEND:VCARD`;
+                }
+            } catch (e) { }
+
+            state.content.value = val || " ";
+        }
+
+        function setGradient(isGrad) {
+            state.colors.isGradient = isGrad;
+            const solidIn = document.getElementById('solid-input');
+            const gradIn = document.getElementById('grad-input');
+            const btnSolid = document.getElementById('btn-solid');
+            const btnGrad = document.getElementById('btn-grad');
+
+            if (isGrad) {
+                btnGrad.className = "px-3 py-1 text-xs font-bold rounded bg-white dark:bg-slate-700 shadow-sm transition text-slate-800 dark:text-white";
+                btnSolid.className = "px-3 py-1 text-xs font-bold rounded text-slate-500 hover:text-slate-700 transition";
+                solidIn.classList.add('hidden');
+                gradIn.classList.remove('hidden');
+            } else {
+                btnSolid.className = "px-3 py-1 text-xs font-bold rounded bg-white dark:bg-slate-700 shadow-sm transition text-slate-800 dark:text-white";
+                btnGrad.className = "px-3 py-1 text-xs font-bold rounded text-slate-500 hover:text-slate-700 transition";
+                gradIn.classList.add('hidden');
+                solidIn.classList.remove('hidden');
+            }
+            updateQR();
+        }
+
+        // --- Logo Handling ---
+        function handleLogoUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    state.logo.src = evt.target.result;
+                    document.getElementById('upload-zone').classList.add('hidden');
+                    document.getElementById('logo-options').classList.remove('hidden');
+                    document.getElementById('logo-preview').src = state.logo.src;
+
+                    // Auto switch to High Error Correction for Logos
+                    state.config.ecc = 'H';
+                    document.getElementById('config-ecc').value = 'H';
+
+                    updateQR();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeLogo() {
+            state.logo.src = null;
+            document.getElementById('file-logo').value = '';
+            document.getElementById('logo-options').classList.add('hidden');
+            document.getElementById('upload-zone').classList.remove('hidden');
+
+            // Revert to Medium if user wants (optional, but good UX to leave it H or reset to M)
+            // state.config.ecc = 'M';
+            // document.getElementById('config-ecc').value = 'M';
+
+            updateQR();
+        }
+
+        // --- Shapes & Presets Data ---
+        const shapes = {
+            body: [
+                { id: 'square', icon: '<rect x="4" y="4" width="16" height="16" />' },
+                { id: 'circle', icon: '<circle cx="12" cy="12" r="7" />' },
+                { id: 'rounded', icon: '<rect x="4" y="4" width="16" height="16" rx="4" />' },
+                { id: 'classy', icon: '<path d="M4,4 h16 v16 h-16 v-8 a8,8 0 0,1 0,0 z" transform="rotate(45 12 12)" />' },
+                { id: 'diamond', icon: '<rect x="4" y="4" width="16" height="16" transform="rotate(45 12 12)" />' },
+                { id: 'star', icon: '<polygon points="12,2 15,9 22,9 17,15 19,22 12,18 5,22 7,15 2,9 9,9" />' },
+                { id: 'heart', icon: '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>' },
+                { id: 'triangle', icon: '<polygon points="12,4 20,20 4,20" />' },
+                { id: 'hexagon', icon: '<polygon points="12,2 21,7 21,17 12,22 3,17 3,7" />' },
+                { id: 'cross', icon: '<path d="M8 4v4H4v8h4v4h8v-4h4V8h-4V4z" />' },
+            ],
+            frame: [
+                { id: 'square', icon: '<path d="M4,4 h16 v16 h-16 z M7,7 v10 h10 v-10 z" fill-rule="evenodd"/>' },
+                { id: 'circle', icon: '<path d="M12,2 A10,10 0 1,1 12,22 A10,10 0 0,1 12,2 M12,5 A7,7 0 1,1 12,19 A7,7 0 0,1 12,5" fill-rule="evenodd"/>' },
+                { id: 'rounded', icon: '<path d="M4,8 a4,4 0 0,1 4,-4 h8 a4,4 0 0,1 4,4 v8 a4,4 0 0,1 -4,4 h-8 a4,4 0 0,1 -4,-4 z M7,8 a1,1 0 0,1 1,-1 h8 a1,1 0 0,1 1,1 v8 a1,1 0 0,1 -1,1 h-8 a1,1 0 0,1 -1,-1 z" fill-rule="evenodd"/>' },
+                { id: 'leaf', icon: '<path d="M2,12 a10,10 0 0,1 10,-10 h10 v10 a10,10 0 0,1 -10,10 h-10 z M6,12 a6,6 0 0,1 6,-6 h6 v6 a6,6 0 0,1 -6,6 h-6 z" fill-rule="evenodd"/>' },
+                { id: 'hexagon', icon: '<path d="M12,2 L21,7 L21,17 L12,22 L3,17 L3,7 Z M12,5 L18,8.5 L18,15.5 L12,19 L6,15.5 L6,8.5 Z" fill-rule="evenodd"/>' },
+                { id: 'gem', icon: '<path d="M8,2 L16,2 L22,8 L22,16 L16,22 L8,22 L2,16 L2,8 Z M9,5 L15,5 L19,9 L19,15 L15,19 L9,19 L5,15 L5,9 Z" fill-rule="evenodd"/>' },
+            ],
+            eye: [
+                { id: 'square', icon: '<rect x="7" y="7" width="10" height="10" />' },
+                { id: 'circle', icon: '<circle cx="12" cy="12" r="5" />' },
+                { id: 'diamond', icon: '<rect x="7" y="7" width="10" height="10" transform="rotate(45 12 12)" />' },
+                { id: 'hexagon', icon: '<polygon points="12,7 16.5,9.5 16.5,14.5 12,17 7.5,14.5 7.5,9.5" />' },
+                { id: 'triangle', icon: '<polygon points="12,7 17,16 7,16" />' },
+                { id: 'star', icon: '<polygon points="12,6 13.5,10 18,10 14.5,13 16,17 12,15 8,17 9.5,13 6,10 10.5,10" />' },
+                { id: 'heart', icon: '<path d="M12 17.5l-1-1C7 13 5 11 5 8.5c0-2 1.5-3.5 3.5-3.5 1 0 2 .5 2.5 1.5.5-1 1.5-1.5 2.5-1.5 2 0 3.5 1.5 3.5 3.5 0 2.5-2 4.5-6 8l-1 1z"/>' },
+            ]
+        };
+
+        function renderShapeOptions() {
+            const createBtn = (s, cat) => `
+                <button data-shape="${s.id}" class="flex-shrink-0 w-12 h-12 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-violet-600 hover:border-violet-600 transition ${state.design[cat] === s.id ? 'bg-violet-50 border-violet-600 text-violet-600' : ''}">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">${s.icon}</svg>
+                </button>
+            `;
+            document.getElementById('shape-body-track').innerHTML = shapes.body.map(s => createBtn(s, 'body')).join('');
+            document.getElementById('shape-frame-track').innerHTML = shapes.frame.map(s => createBtn(s, 'frame')).join('');
+            document.getElementById('shape-eye-track').innerHTML = shapes.eye.map(s => createBtn(s, 'eye')).join('');
+        }
+
+        const presets = [
+            // Solids
+            { type: 'solid', c: '#000000', bg: '#ffffff' },
+            { type: 'solid', c: '#334155', bg: '#f8fafc' },
+            { type: 'solid', c: '#dc2626', bg: '#fef2f2' },
+            { type: 'solid', c: '#ea580c', bg: '#fff7ed' },
+            { type: 'solid', c: '#d97706', bg: '#fffbeb' },
+            { type: 'solid', c: '#16a34a', bg: '#f0fdf4' },
+            { type: 'solid', c: '#0d9488', bg: '#f0fdfa' },
+            { type: 'solid', c: '#0284c7', bg: '#f0f9ff' },
+            { type: 'solid', c: '#4f46e5', bg: '#eef2ff' },
+            { type: 'solid', c: '#7c3aed', bg: '#f5f3ff' },
+            { type: 'solid', c: '#db2777', bg: '#fdf2f8' },
+            // Gradients
+            { type: 'grad', c1: '#4f46e5', c2: '#db2777', bg: '#ffffff' }, // Indigo-Pink
+            { type: 'grad', c1: '#2563eb', c2: '#06b6d4', bg: '#f0f9ff' }, // Blue-Cyan
+            { type: 'grad', c1: '#f59e0b', c2: '#ef4444', bg: '#fff7ed' }, // Sunset
+            { type: 'grad', c1: '#10b981', c2: '#3b82f6', bg: '#f0fdf4' }, // Nature
+            { type: 'grad', c1: '#8b5cf6', c2: '#d946ef', bg: '#faf5ff' }, // Berry
+            { type: 'grad', c1: '#0f172a', c2: '#334155', bg: '#e2e8f0' }, // Dark
+        ];
+
+        // --- Style Presets ---
+        const stylePresets = [
+            {
+                name: 'Moderno',
+                icon: 'layout',
+                colors: { bg: '#eef2ff', dots: '#4f46e5', frame: '#4f46e5', eye: '#4f46e5', isGradient: false },
+                design: { body: 'rounded', frame: 'rounded', eye: 'rounded' }
+            },
+            {
+                name: 'Tech',
+                icon: 'cpu',
+                colors: { bg: '#f0fdfa', c1: '#0d9488', c2: '#2dd4bf', isGradient: true },
+                design: { body: 'hexagon', frame: 'hexagon', eye: 'hexagon' }
+            },
+            {
+                name: 'Amor',
+                icon: 'heart',
+                colors: { bg: '#fdf2f8', c1: '#db2777', c2: '#f472b6', isGradient: true },
+                design: { body: 'heart', frame: 'rounded', eye: 'heart' }
+            },
+            {
+                name: 'Natureza',
+                icon: 'leaf',
+                colors: { bg: '#f0fdf4', c1: '#16a34a', c2: '#4ade80', isGradient: true },
+                design: { body: 'rounded', frame: 'leaf', eye: 'circle' }
+            },
+            {
+                name: 'Clássico',
+                icon: 'box',
+                colors: { bg: '#ffffff', dots: '#000000', frame: '#000000', eye: '#000000', isGradient: false },
+                design: { body: 'square', frame: 'square', eye: 'square' }
+            }
+        ];
+
+        function renderStylePresets() {
+            const track = document.getElementById('style-presets-track');
+            track.innerHTML = stylePresets.map(p => `
+                <button class="style-preset-btn flex flex-col items-center gap-2 group min-w-[70px] cursor-pointer" onclick='applyStylePreset(${JSON.stringify(p)})'>
+                    <div class="w-14 h-14 rounded-2xl border-2 border-slate-100 dark:border-slate-800 flex items-center justify-center bg-white dark:bg-slate-800 group-hover:border-violet-500 transition shadow-sm relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-20" style="background: ${p.colors.isGradient ? `linear-gradient(135deg, ${p.colors.c1}, ${p.colors.c2})` : p.colors.dots}"></div>
+                        <i data-lucide="${p.icon}" class="w-6 h-6 text-slate-600 dark:text-slate-300 group-hover:text-violet-500 transition relative z-10"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide group-hover:text-violet-600 transition">${p.name}</span>
+                </button>
+             `).join('');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function applyStylePreset(p) {
+            // Apply Design
+            state.design.body = p.design.body;
+            state.design.frame = p.design.frame;
+            state.design.eye = p.design.eye;
+
+            // Render shapes to update active states
+            renderShapeOptions();
+
+            // Apply Colors
+            state.colors.bg = p.colors.bg;
+            state.colors.isGradient = p.colors.isGradient;
+
+            if (p.colors.isGradient) {
+                state.colors.gradStart = p.colors.c1;
+                state.colors.gradEnd = p.colors.c2;
+                state.colors.dots = p.colors.c1; // fallback
+                state.colors.frame = p.colors.c1;
+                state.colors.eye = p.colors.c2;
+
+                document.getElementById('color-grad-1').value = p.colors.c1;
+                document.getElementById('color-grad-2').value = p.colors.c2;
+            } else {
+                state.colors.dots = p.colors.dots;
+                state.colors.frame = p.colors.frame;
+                state.colors.eye = p.colors.eye;
+
+                document.getElementById('color-dots').value = p.colors.dots;
+                document.getElementById('hex-dots').innerText = p.colors.dots.toUpperCase();
+            }
+
+            // Sync UI Color Inputs
+            document.getElementById('color-frame').value = state.colors.frame;
+            document.getElementById('hex-frame').innerText = state.colors.frame.toUpperCase();
+            document.getElementById('color-eye').value = state.colors.eye;
+            document.getElementById('hex-eye').innerText = state.colors.eye.toUpperCase();
+            document.getElementById('color-bg').value = state.colors.bg;
+
+            setGradient(state.colors.isGradient);
+            updateQR();
+            showToast(`${p.name} aplicado!`);
+        }
+
+        function renderColorPresets() {
+            const track = document.getElementById('presets-track');
+            track.innerHTML = presets.map((p, i) => {
+                const bgStyle = p.type === 'grad'
+                    ? `background: linear-gradient(135deg, ${p.c1}, ${p.c2})`
+                    : `background: ${p.c}`;
+                return `<button class="preset-btn flex-shrink-0 w-10 h-10 rounded-full border border-slate-200 shadow-sm transition hover:scale-110" style="${bgStyle}" data-index="${i}"></button>`;
+            }).join('');
+
+            track.addEventListener('click', (e) => {
+                const btn = e.target.closest('.preset-btn');
+                if (btn) applyPreset(presets[btn.dataset.index]);
+            });
+        }
+
+        function applyPreset(p) {
+            state.colors.bg = p.bg;
+
+            if (p.type === 'grad') {
+                state.colors.isGradient = true;
+                state.colors.gradStart = p.c1;
+                state.colors.gradEnd = p.c2;
+                state.colors.dots = p.c1; // Fallback
+                state.colors.frame = p.c1;
+                state.colors.eye = p.c2;
+
+                document.getElementById('color-grad-1').value = p.c1;
+                document.getElementById('color-grad-2').value = p.c2;
+            } else {
+                state.colors.isGradient = false;
+                state.colors.dots = p.c;
+                state.colors.frame = p.c;
+                state.colors.eye = p.c;
+
+                document.getElementById('color-dots').value = p.c;
+                document.getElementById('hex-dots').innerText = p.c.toUpperCase();
+            }
+
+            // Sync UI inputs
+            document.getElementById('color-frame').value = state.colors.frame;
+            document.getElementById('hex-frame').innerText = state.colors.frame.toUpperCase();
+            document.getElementById('color-eye').value = state.colors.eye;
+            document.getElementById('hex-eye').innerText = state.colors.eye.toUpperCase();
+            document.getElementById('color-bg').value = state.colors.bg;
+
+            setGradient(state.colors.isGradient);
+            updateQR();
+        }
+
+        // --- Optimized Rendering ---
+        function updateQR() {
+            if (typeof qrcode === 'undefined') return;
+
+            try {
+                // Use dynamic Error Correction Level (L, M, Q, H)
+                const qr = qrcode(0, state.config.ecc);
+                qr.addData(state.content.value);
+                qr.make();
+
+                const count = qr.getModuleCount();
+                const size = 1000;
+                const padding = 60;
+
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+
+                // Draw BG
+                if (!state.colors.isTransparent) {
+                    ctx.fillStyle = state.colors.bg;
+                    ctx.fillRect(0, 0, size, size);
+                }
+
+                const cellSize = (size - padding * 2) / count;
+                const offset = padding;
+                const isCorner = (r, c) => (r < 7 && c < 7) || (r < 7 && c >= count - 7) || (r >= count - 7 && c < 7);
+
+                // --- BATCH RENDERING OPTIMIZATION ---
+                // Instead of filling every dot, we build paths.
+
+                // 1. Body Dots
+                if (state.colors.isGradient) {
+                    // Gradient requires filling per batch or using a global fill style
+                    const grad = ctx.createLinearGradient(0, 0, size, size);
+                    grad.addColorStop(0, state.colors.gradStart);
+                    grad.addColorStop(1, state.colors.gradEnd);
+                    ctx.fillStyle = grad;
+                } else {
+                    ctx.fillStyle = state.colors.dots;
+                }
+
+                ctx.beginPath();
+                for (let r = 0; r < count; r++) {
+                    for (let c = 0; c < count; c++) {
+                        if (qr.isDark(r, c) && !isCorner(r, c)) {
+                            drawShapePath(ctx, state.design.body, offset + c * cellSize, offset + r * cellSize, cellSize);
+                        }
+                    }
+                }
+                ctx.fill(); // SINGLE FILL CALL FOR ALL BODY DOTS
+
+                // 2. Finders (Frames)
+                ctx.fillStyle = state.colors.frame;
+                ctx.strokeStyle = state.colors.frame;
+                ctx.lineWidth = cellSize;
+
+                const drawFrame = (r, c) => {
+                    const x = offset + c * cellSize;
+                    const y = offset + r * cellSize;
+                    const size = cellSize * 7;
+
+                    // Frames are complex, we draw them individually but they are few (3)
+                    drawFramePath(ctx, state.design.frame, x, y, size);
+                };
+
+                // 3. Finder Eyes (Centers)
+                const drawEye = (r, c) => {
+                    const x = offset + c * cellSize + cellSize * 2;
+                    const y = offset + r * cellSize + cellSize * 2;
+                    const size = cellSize * 3;
+                    ctx.fillStyle = state.colors.eye; // Reset fill for eyes
+                    ctx.beginPath();
+                    drawShapePath(ctx, state.design.eye, x, y, size);
+                    ctx.fill();
+                };
+
+                // Execute Finder Drawing
+                drawFrame(0, 0); drawFrame(0, count - 7); drawFrame(count - 7, 0);
+                drawEye(0, 0); drawEye(0, count - 7); drawEye(count - 7, 0);
+
+                // Logo
+                if (state.logo.src) {
+                    const img = new Image();
+                    img.src = state.logo.src;
+                    img.onload = () => {
+                        const s = size * state.logo.size;
+                        const p = (size - s) / 2;
+                        ctx.drawImage(img, p, p, s, s);
+                        displayCanvas(canvas);
+                    };
+                    return;
+                }
+
+                displayCanvas(canvas);
+
+            } catch (e) { console.error(e); }
+        }
+
+        function drawShapePath(ctx, shape, x, y, size) {
+            const r = size / 2;
+            const cx = x + r;
+            const cy = y + r;
+
+            if (shape === 'circle') {
+                ctx.moveTo(cx + r * 0.95, cy);
+                ctx.arc(cx, cy, r * 0.95, 0, Math.PI * 2);
+            } else if (shape === 'rounded') {
+                roundRectPath(ctx, x, y, size, size, size * 0.25);
+            } else if (shape === 'classy') {
+                roundRectPath(ctx, x, y, size, size, [size / 2, 0, size / 2, 0]);
+            } else if (shape === 'diamond') {
+                drawPolygon(ctx, cx, cy, 4, r, Math.PI / 2);
+            } else if (shape === 'star') {
+                drawStar(ctx, cx, cy, 5, r * 0.9, r * 0.4);
+            } else if (shape === 'heart') {
+                drawHeart(ctx, x, y, size, size);
+            } else if (shape === 'triangle') {
+                drawPolygon(ctx, cx, cy + r * 0.1, 3, r, -Math.PI / 2);
+            } else if (shape === 'hexagon') {
+                drawPolygon(ctx, cx, cy, 6, r * 0.95, Math.PI / 2);
+            } else if (shape === 'cross') {
+                const w = size / 3;
+                ctx.rect(x + w, y, w, size);
+                ctx.rect(x, y + w, size, w);
+            } else {
+                ctx.rect(x, y, size + 0.5, size + 0.5); // Overlap slightly to fix sub-pixel gaps
+            }
+        }
+
+        function drawFramePath(ctx, shape, x, y, size) {
+            const thickness = size / 7;
+            const outer = size - thickness;
+            const ox = x + thickness / 2;
+            const oy = y + thickness / 2;
+            const cx = x + size / 2;
+            const cy = y + size / 2;
+
+            ctx.beginPath();
+            if (shape === 'circle') {
+                ctx.lineWidth = thickness;
+                ctx.arc(cx, cy, outer / 2, 0, Math.PI * 2);
+                ctx.stroke();
+            } else if (shape === 'rounded') {
+                ctx.lineWidth = thickness;
+                ctx.roundRect(ox, oy, outer, outer, size * 0.2);
+                ctx.stroke();
+            } else if (shape === 'leaf') {
+                ctx.lineWidth = thickness;
+                ctx.roundRect(ox, oy, outer, outer, [size * 0.3, 0, size * 0.3, 0]);
+                ctx.stroke();
+            } else if (shape === 'hexagon') {
+                ctx.lineWidth = thickness;
+                drawPolygon(ctx, cx, cy, 6, outer / 2, Math.PI / 2);
+                ctx.closePath();
+                ctx.stroke();
+            } else if (shape === 'gem') {
+                ctx.lineWidth = thickness;
+                // Cut corners (octagon-ish but irregular for gem look often called 'octagon' in this context)
+                // Let's do a chamfered rectangle
+                const chamfer = size * 0.2;
+                ctx.moveTo(x + chamfer, y);
+                ctx.lineTo(x + size - chamfer, y);
+                ctx.lineTo(x + size, y + chamfer);
+                ctx.lineTo(x + size, y + size - chamfer);
+                ctx.lineTo(x + size - chamfer, y + size);
+                ctx.lineTo(x + chamfer, y + size);
+                ctx.lineTo(x, y + size - chamfer);
+                ctx.lineTo(x, y + chamfer);
+                ctx.closePath();
+                // We need to stroke the center of the line, but stroke() works on path.
+                // The path above is the OUTER edge basically if we fill.
+                // To keep it consistent with other strokes which are centered on the line:
+                // We'll just stroke this path, but adjust scale slightly inwards?
+                // Actually standard stroke is centered. So we just need to inset by thickness/2.
+                // Let's just use the current path as the center line for simplicity, adjusting chamfer.
+                ctx.stroke();
+            } else {
+                // Square frame (default) 
+                ctx.fillStyle = state.colors.frame;
+                ctx.fillRect(x, y, size, size);
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillRect(x + thickness, y + thickness, size - thickness * 2, size - thickness * 2);
+                ctx.globalCompositeOperation = 'source-over';
+            }
+        }
+
+        // --- Helpers ---
+
+        function roundRectPath(ctx, x, y, w, h, radii) {
+            if (ctx.roundRect) {
+                ctx.roundRect(x, y, w, h, radii || 0);
+            } else { // Fallback for older browsers
+                ctx.rect(x, y, w, h);
+            }
+        }
+
+        function drawStar(ctx, cx, cy, spikes, outer, inner) {
+            let rot = Math.PI / 2 * 3;
+            let x = cx; let y = cy; let step = Math.PI / spikes;
+            ctx.moveTo(cx, cy - outer);
+            for (let i = 0; i < spikes; i++) {
+                x = cx + Math.cos(rot) * outer; y = cy + Math.sin(rot) * outer;
+                ctx.lineTo(x, y); rot += step;
+                x = cx + Math.cos(rot) * inner; y = cy + Math.sin(rot) * inner;
+                ctx.lineTo(x, y); rot += step;
+            }
+            ctx.lineTo(cx, cy - outer);
+        }
+
+        function drawHeart(ctx, x, y, w, h) {
+            const topCurveHeight = h * 0.3;
+            ctx.moveTo(x + w / 2, y + h * 0.2);
+            ctx.bezierCurveTo(x + w / 2, y + h * 0.2 - topCurveHeight, x, y, x, y + h * 0.4);
+            ctx.bezierCurveTo(x, y + h * 0.6, x + w / 2, y + h * 0.8, x + w / 2, y + h);
+            ctx.bezierCurveTo(x + w / 2, y + h * 0.8, x + w, y + h * 0.6, x + w, y + h * 0.4);
+            ctx.bezierCurveTo(x + w, y, x + w / 2, y + h * 0.2 - topCurveHeight, x + w / 2, y + h * 0.2);
+        }
+
+        function drawPolygon(ctx, cx, cy, sides, r, rotationOffset = 0) {
+            const step = (Math.PI * 2) / sides;
+            ctx.moveTo(cx + r * Math.cos(rotationOffset), cy + r * Math.sin(rotationOffset));
+            for (let i = 1; i <= sides; i++) {
+                ctx.lineTo(cx + r * Math.cos(rotationOffset + i * step), cy + r * Math.sin(rotationOffset + i * step));
+            }
+        }
+
+        function displayCanvas(canvas) {
+            els.qrTarget.innerHTML = '';
+            canvas.style.width = '100%'; canvas.style.height = '100%';
+            els.qrTarget.appendChild(canvas);
+        }
+
+        function scrollX(id, dir) { document.getElementById(id).scrollBy({ left: 200 * dir, behavior: 'smooth' }); }
+
+        function initTheme() {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        }
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function downloadPNG() {
+            const canvas = document.querySelector('#qr-target canvas');
+            if (canvas) {
+                const a = document.createElement('a');
+                a.download = (document.getElementById('filename').value || 'qrcode') + '.png';
+                a.href = canvas.toDataURL();
+                a.click();
+                showToast('Download iniciado!');
+            }
+        }
+
+        function copyImage() {
+            const canvas = document.querySelector('#qr-target canvas');
+            if (canvas) {
+                canvas.toBlob(blob => {
+                    navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                    showToast('Copiado para a área de transferência!');
+                });
+            }
+        }
+    </script>
 </body>
 
 </html>
