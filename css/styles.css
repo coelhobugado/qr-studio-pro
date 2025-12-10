@@ -1,0 +1,558 @@
+:root {
+    /* Glass Effects */
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    
+    /* Brand Colors */
+    --color-primary: #14b8a6;
+    --color-primary-dark: #0d9488;
+    --color-primary-light: #5eead4;
+    
+    /* Semantic Colors */
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+    --color-info: #3b82f6;
+    
+    /* Focus Ring */
+    --focus-ring: 0 0 0 3px rgba(20, 184, 166, 0.3);
+    --focus-ring-offset: 2px;
+}
+
+.dark {
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(15, 23, 42, 0.6);
+    
+    --color-primary: #14b8a6;
+    --color-primary-dark: #0d9488;
+    --color-primary-light: #5eead4;
+}
+
+/* Dark Mode Background */
+.dark body {
+    background-color: #0f172a;
+    background-image:
+        radial-gradient(at 0% 0%, hsla(253, 16%, 10%, 1) 0, transparent 50%),
+        radial-gradient(at 50% 0%, hsla(220, 50%, 10%, 1) 0, transparent 50%),
+        radial-gradient(at 100% 100%, hsla(339, 49%, 10%, 1) 0, transparent 50%);
+}
+
+body {
+    background-color: #f0f4f8;
+    background-image:
+        radial-gradient(at 0% 0%, hsla(253, 16%, 90%, 1) 0, transparent 50%),
+        radial-gradient(at 50% 0%, hsla(180, 100%, 95%, 1) 0, transparent 50%),
+        radial-gradient(at 100% 100%, hsla(339, 49%, 90%, 1) 0, transparent 50%);
+    background-attachment: fixed;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Glassmorphism Classes */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+}
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+}
+
+/* Segmented Control - Pills */
+.segmented-control {
+    background: #e2e8f0;
+    padding: 0.3rem;
+    border-radius: 1rem;
+    display: flex;
+    position: relative;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #64748b;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    color: #334155;
+}
+
+.tab-btn.active {
+    background: white;
+    color: #0f172a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Color Cards & Inputs */
+.color-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+/* Better hover state for interactivity */
+.color-card:hover {
+    border-color: #14b8a6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px -2px rgba(20, 184, 166, 0.1);
+}
+
+.color-circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.color-circle input[type="color"] {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+}
+
+/* Shape Buttons */
+.shape-btn {
+    background: white;
+    border: 2px solid #e2e8f0;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shape-btn:hover {
+    border-color: #14b8a6;
+    background: #f0fdfa;
+    transform: translateY(-2px);
+}
+
+.shape-btn.active {
+    background: #f0fdfa;
+    border-color: #0d9488;
+    color: #0d9488;
+    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+}
+
+/* Range Slider UX */
+input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+/* Realistic Phone */
+.phone-frame {
+    border: 14px solid #1e293b;
+    border-radius: 50px;
+    overflow: hidden;
+    position: relative;
+    background: #000;
+    box-shadow:
+        0 0 0 2px #334155,
+        0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    width: 260px;
+}
+
+.phone-notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 24px;
+    background: #000;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    z-index: 50;
+}
+
+/* Carousel */
+.carousel-container {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding: 0.5rem;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.carousel-container::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Improved Navigation Buttons (UX) */
+.carousel-btn {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(226, 232, 240, 1);
+    border-radius: 50%;
+    width: 2rem;
+    /* Bigger touch target */
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    z-index: 20; /* Increased to ensure it's on top */
+    color: #475569;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.carousel-wrapper:hover .carousel-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.carousel-btn:hover {
+    background: white;
+    border-color: #14b8a6;
+    color: #0d9488;
+    transform: scale(1.1);
+}
+
+.carousel-btn.left {
+    left: -1rem;
+}
+
+.carousel-btn.right {
+    right: -1rem;
+}
+
+.carousel-container {
+    scroll-snap-type: x mandatory;
+}
+
+.carousel-item {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+    width: 3.5rem;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    opacity: 0;
+}
+
+.accordion-content.open {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 1rem;
+}
+
+.accordion-trigger i {
+    transition: transform 0.3s;
+}
+
+.accordion-trigger.open i {
+    transform: rotate(180deg);
+}
+
+.phone-reflection {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.05) 100%);
+    pointer-events: none;
+    z-index: 40;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Toast Notification */
+#toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    position: fixed;
+    z-index: 100;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s, bottom 0.3s;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+#toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px;
+}
+
+/* Type Button Active State */
+.type-btn.active {
+    background: white;
+    color: #0f172a;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dark .type-btn.active {
+    background: #1e293b;
+    color: #f1f5f9;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   QUICK WINS - MELHORIAS DE UX
+   ======================================== */
+
+/* Loading States & Animations */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(20, 184, 166, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--color-primary);
+    animation: spin 0.8s linear infinite;
+}
+
+/* Focus States - Acessibilidade */
+*:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    outline-offset: var(--focus-ring-offset);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+/* Mobile Touch Targets - MÃ­nimo 44x44px */
+@media (max-width: 768px) {
+    button,
+    .tab-btn,
+    .type-btn,
+    .shape-btn,
+    .carousel-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Melhor espaÃ§amento mobile */
+    .segmented-control {
+        gap: 0.25rem;
+    }
+    
+    .carousel-container {
+        gap: 1rem;
+    }
+}
+
+/* ValidaÃ§Ã£o de Inputs */
+.input-validation {
+    position: relative;
+}
+
+.input-validation.valid input {
+    border-color: var(--color-success);
+    padding-right: 2.5rem;
+}
+
+.input-validation.invalid input {
+    border-color: var(--color-error);
+    padding-right: 2.5rem;
+}
+
+.validation-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.validation-icon.valid {
+    color: var(--color-success);
+}
+
+.validation-icon.invalid {
+    color: var(--color-error);
+}
+
+.validation-message {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
+.validation-message.error {
+    color: var(--color-error);
+}
+
+.validation-message.success {
+    color: var(--color-success);
+}
+
+/* Smooth Accordion Transitions */
+.accordion-trigger {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accordion-trigger:hover {
+    color: var(--color-primary);
+}
+
+.accordion-content {
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Mode Toggle Animation */
+#themeToggle {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#themeToggle:active {
+    transform: rotate(180deg);
+}
+
+/* Improved Toast */
+#toast {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Character Counter */
+.char-counter {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-align: right;
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
+.char-counter.warning {
+    color: var(--color-warning);
+}
+
+.char-counter.error {
+    color: var(--color-error);
+}
+
+/* Skip Link for Accessibility */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--color-primary);
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 0 0 4px 0;
+    font-weight: 600;
+    z-index: 100;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Screen Reader Only - Visually hidden but accessible */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
